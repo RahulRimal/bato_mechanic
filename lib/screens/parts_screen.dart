@@ -5,45 +5,28 @@ class PartsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Vehicle> _vehicles = [
-      Vehicle(
-        name: 'Bike',
-        image: 'images/bike.png',
-        type: '2 wheeler',
-        tagLine: 'Two wheeler',
+    List<PartsCategory> _categories = [
+      PartsCategory(
+        name: 'Wheels',
+        image: 'images/parts/wheel.png',
       ),
-      Vehicle(
-        name: 'Car',
-        image: 'images/car.png',
-        type: '4 wheeler',
-        tagLine: 'Small four wheeler',
+      PartsCategory(
+        name: 'Engine',
+        image: 'images/parts/engine.png',
       ),
-      Vehicle(
-        name: 'Bus',
-        image: 'images/car.png',
-        type: '4 wheeler',
-        tagLine: 'Four wheeler',
+      PartsCategory(
+        name: 'Electricity',
+        image: 'images/parts/electricity.png',
       ),
-      Vehicle(
-        name: 'Semi',
-        image: 'images/semi.png',
-        type: '4 wheeler',
-        tagLine: 'Heavy Four wheeler',
+      PartsCategory(
+        name: 'Body',
+        image: 'images/parts/body.png',
       ),
-      Vehicle(
-        name: 'Machinary',
-        image: 'images/jcb.png',
-        type: '4 wheeler',
-        tagLine: 'Heavy four wheeler',
-      ),
-      Vehicle(
-        name: 'Car',
-        image: 'images/car.png',
-        type: 'car',
-        tagLine: 'Small four wheeler',
+      PartsCategory(
+        name: 'Accessories',
+        image: 'images/parts/accessories.png',
       ),
     ];
-
     return Scaffold(
       // backgroundColor: Colors.amber[800],
       body: SingleChildScrollView(
@@ -55,7 +38,7 @@ class PartsScreen extends StatelessWidget {
               height: 200,
             ),
             Text(
-              'Parts Screen',
+              'Where is the problem being occured?',
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
@@ -64,7 +47,7 @@ class PartsScreen extends StatelessWidget {
             ),
             GridView.builder(
               shrinkWrap: true,
-              itemCount: _vehicles.length,
+              itemCount: _categories.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
               ),
@@ -83,26 +66,25 @@ class PartsScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image.asset('images/car.png'),
                       Image.asset(
-                        _vehicles[index].image,
+                        _categories[index].image,
                         width: 100,
                       ),
                       Text(
-                        _vehicles[index].name,
+                        _categories[index].name,
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        // 'Small four wheeler',
-                        _vehicles[index].tagLine,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
+                      // Text(
+                      //   // 'Small four wheeler',
+                      //   _vehicles[index].tagLine,
+                      //   style: TextStyle(
+                      //     fontSize: 12,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // )
                     ]),
               ),
             ),
@@ -124,4 +106,10 @@ class Vehicle {
   String name;
   String type;
   String tagLine;
+}
+
+class PartsCategory {
+  PartsCategory({required this.name, required this.image});
+  String name;
+  String image;
 }

@@ -9,45 +9,33 @@ class HomeScreen extends StatelessWidget {
     List<Vehicle> _vehicles = [
       Vehicle(
         name: 'Bike',
-        image: 'images/bike.png',
+        image: 'images/vehicle/bike.png',
         type: '2 wheeler',
         tagLine: 'Two wheeler',
       ),
       Vehicle(
         name: 'Car',
-        image: 'images/car.png',
+        image: 'images/vehicle/car.png',
         type: '4 wheeler',
         tagLine: 'Small four wheeler',
       ),
       Vehicle(
         name: 'Bus',
-        image: 'images/car.png',
+        image: 'images/vehicle/bus.png',
         type: '4 wheeler',
         tagLine: 'Four wheeler',
       ),
       Vehicle(
         name: 'Semi',
-        image: 'images/semi.png',
+        image: 'images/vehicle/semi.png',
         type: '4 wheeler',
         tagLine: 'Heavy Four wheeler',
       ),
       Vehicle(
         name: 'Machinary',
-        image: 'images/jcb.png',
+        image: 'images/vehicle/jcb.png',
         type: '4 wheeler',
         tagLine: 'Heavy four wheeler',
-      ),
-      Vehicle(
-        name: 'Car',
-        image: 'images/car.png',
-        type: 'car',
-        tagLine: 'Small four wheeler',
-      ),
-      Vehicle(
-        name: 'Car',
-        image: 'images/car.png',
-        type: 'car',
-        tagLine: 'Small four wheeler',
       ),
     ];
 
@@ -58,11 +46,53 @@ class HomeScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(
-              height: 200,
+            Container(
+              margin: const EdgeInsets.only(top: 20, bottom: 50.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        // backgroundColor: Colors.amberAccent[200],
+                        backgroundColor: Colors.amberAccent,
+                        backgroundImage: NetworkImage(
+                            'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS111111111&usqp=CAU'),
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          Text(
+                            'Rahul',
+                            style: TextStyle(
+                              color: Colors.black45,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.notification_add),
+                  ),
+                ],
+              ),
             ),
             Text(
-              'Parts for sell',
+              'Select your vehicle',
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,

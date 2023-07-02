@@ -1,3 +1,4 @@
+import 'package:bato_mechanic/screens/request_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicles_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: const HomeScreen(),
+      // home: const HomeScreen(),
+      home: RequestMechanicScreen(),
     );
   }
 }
