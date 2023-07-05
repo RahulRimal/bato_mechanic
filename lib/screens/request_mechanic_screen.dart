@@ -1,21 +1,24 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
+import '../utils/flutter_map_utils/scale_layer_plugin_option.dart';
+
 class RequestMechanicScreen extends StatefulWidget {
+  const RequestMechanicScreen({Key? key}) : super(key: key);
+
   @override
   _RequestMechanicScreenState createState() => _RequestMechanicScreenState();
 }
 
 class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
-  LocationData? _currentLocation;
+  Position? _currentLocation;
   VideoPlayerController? _videoController;
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
   final ImagePicker _imagePicker = ImagePicker();
 
   @override
@@ -31,31 +34,30 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   }
 
   Future<void> _initializeLocation() async {
-    final Location location = Location();
+    bool serviceEnabled;
+    LocationPermission permission;
+    Position position;
 
-    bool _serviceEnabled;
-    PermissionStatus _permissionGranted;
-    LocationData _locationData;
-
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await Geolocator.openLocationSettings();
+      if (!serviceEnabled) {
         return;
       }
     }
 
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
         return;
       }
     }
 
-    _locationData = await location.getLocation();
+    position = await Geolocator.getCurrentPosition();
     setState(() {
-      _currentLocation = _locationData;
+      _currentLocation = position;
     });
   }
 
@@ -83,93 +85,144 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Request Mechanic'),
+        title: const Text('Request Mechanic'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Provide your location:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             _currentLocation != null
-                ? FlutterMap(
-                    options: MapOptions(
-                      center: LatLng(_currentLocation!.latitude!,
-                          _currentLocation!.longitude!),
-                      zoom: 13.0,
-                    ),
-                    layers: [
-                      TileLayerOptions(
-                        urlTemplate:
-                            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        subdomains: ['a', 'b', 'c'],
+                ? Flexible(
+                    child: FlutterMap(
+                      options: MapOptions(
+                        center:
+
+                            // const LatLng(85.33033043146135, 27.703292452047425),
+                            const LatLng(27.703292452047425, 85.33033043146135),
+                        zoom: 16.0,
+                        // maxBounds: LatLngBounds(
+                        //   const LatLng(-90, -180),
+                        //   const LatLng(90, 180),
+                        // ),
                       ),
-                      MarkerLayerOptions(
-                        markers: [
-                          Marker(
-                            width: 80.0,
-                            height: 80.0,
-                            point: LatLng(_currentLocation!.latitude!,
-                                _currentLocation!.longitude!),
-                            builder: (ctx) => Container(
-                              child: Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                                size: 40.0,
+                      nonRotatedChildren: [
+                        // RichAttributionWidget(
+                        //   popupInitialDisplayDuration:
+                        //       const Duration(seconds: 5),
+                        //   animationConfig: const ScaleRAWA(),
+                        //   attributions: [
+                        //     TextSourceAttribution(
+                        //       'OpenStreetMap contributors',
+                        //     ),
+                        //     const TextSourceAttribution(
+                        //       'This attribution is the same throughout this app, except where otherwise specified',
+                        //       prependCopyright: false,
+                        //     ),
+                        //   ],
+                        // ),
+
+                        ScaleLayerWidget(
+                          options: ScaleLayerPluginOption(
+                            lineColor: Colors.black,
+                            lineWidth: 2,
+                            textStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 12,
+                            ),
+                            padding: const EdgeInsets.all(10),
+                          ),
+                        ),
+                      ],
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          userAgentPackageName:
+                              'dev.fleaflet.flutter_map.example',
+                          tileProvider: NetworkTileProvider(),
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              width: 80,
+                              height: 80,
+                              point: const LatLng(
+                                  27.703292452047425, 85.33033043146135),
+                              builder: (ctx) => Container(
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: Colors.orange,
+                                  size: 40.0,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            Marker(
+                              width: 80,
+                              height: 80,
+                              point: const LatLng(
+                                  27.707645262018172, 85.33825904130937),
+                              builder: (ctx) => Container(
+                                child: Icon(
+                                  Icons.location_on,
+                                  color: Colors.purple,
+                                  size: 40.0,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   )
-                : CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text(
+                : const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            const Text(
               'Describe the issue:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Describe the issue',
                 border: OutlineInputBorder(),
               ),
               maxLines: 5,
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Attach photos:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 ElevatedButton(
                   onPressed: _pickImage,
-                  child: Text('Add Photo'),
+                  child: const Text('Add Photo'),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: _selectedImages.map((File image) {
                         return Container(
-                          margin: EdgeInsets.only(right: 8.0),
+                          margin: const EdgeInsets.only(right: 8.0),
                           width: 80,
                           height: 80,
                           child: Image.file(image, fit: BoxFit.cover),
@@ -180,30 +233,30 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Attach a video:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _pickVideo,
-              child: Text('Add Video'),
+              child: const Text('Add Video'),
             ),
             if (_videoController != null)
               AspectRatio(
                 aspectRatio: _videoController!.value.aspectRatio,
                 child: VideoPlayer(_videoController!),
               ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Logic to submit the request
               },
-              child: Text('Submit Request'),
+              child: const Text('Submit Request'),
             ),
           ],
         ),
@@ -212,57 +265,279 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   }
 }
 
+// -------------------------------------- Map integration using google maps starts here -------------------------------------------
 
-
+// import 'dart:async';
 // import 'package:flutter/material.dart';
-// class RequestMechanicScreen extends StatelessWidget {
+// import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+// class RequestMechanicScreen extends StatefulWidget {
+//   @override
+//   _RequestMechanicScreenState createState() => _RequestMechanicScreenState();
+// }
+
+// class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
+//   final Completer<GoogleMapController> _controller = Completer();
+
+//   static const LatLng sourceLocation = LatLng(37.3300926, -122.03272188);
+//   static const LatLng destination = LatLng(37.33429383, -122.06600055);
+
+//   List<LatLng> polylineCoordinates = [];
+
+//   void getPolyPoints() async {
+//     PolylinePoints polylinePoints = PolylinePoints();
+//     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+//       'AIzaSyCtV10-IveVc0T2kd1WKL2zFtKUkEKbsN8',
+//       PointLatLng(sourceLocation.latitude, sourceLocation.longitude),
+//       PointLatLng(destination.latitude, destination.longitude),
+//     );
+
+//     if (result.points.isNotEmpty) {
+//       result.points.forEach(
+//         (PointLatLng point) =>
+//             polylineCoordinates.add(LatLng(point.latitude, point.longitude)),
+//       );
+//       print(polylineCoordinates);
+//       setState(() {});
+//     }
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     getPolyPoints();
+//   }
+
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       appBar: AppBar(
-//         title: Text('Request Mechanic'),
+//         title: Text('Appbar'),
 //       ),
+//       body: GoogleMap(
+//         polylines: {
+//           Polyline(
+//             polylineId: PolylineId("route"),
+//             points: polylineCoordinates,
+//             color: Colors.black,
+//             width: 6,
+//           ),
+//         },
+//         initialCameraPosition: CameraPosition(
+//           target: sourceLocation,
+//           zoom: 13.5,
+//         ),
+//         markers: {
+//           Marker(
+//             markerId: MarkerId("source"),
+//             position: sourceLocation,
+//           ),
+//           Marker(
+//             markerId: MarkerId("destination"),
+//             position: destination,
+//           ),
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// -------------------------------------- Map integration using google maps ends here -------------------------------------------
+
+// import 'package:flutter/material.dart';
+
+// class RequestMechanicScreen extends StatefulWidget {
+//   const RequestMechanicScreen({super.key});
+
+//   @override
+//   State<RequestMechanicScreen> createState() => _RequestMechanicScreenState();
+// }
+
+// class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Appbar'),
+//       ),
+//     );
+//   }
+// }
+
+// import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/material.dart';
+// import 'package:flutter/scheduler.dart';
+// import 'package:flutter_map/flutter_map.dart';
+
+// class RequestMechanicScreen extends StatefulWidget {
+//   static const String route = '/';
+
+//   const RequestMechanicScreen({Key? key}) : super(key: key);
+
+//   @override
+//   State<RequestMechanicScreen> createState() => _RequestMechanicScreenState();
+// }
+
+// class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
+//   // @override
+//   // void initState() {
+//   //   super.initState();
+
+//   //   const seenIntroBoxKey = 'seenIntroBox(a)';
+//   //   if (kIsWeb && Uri.base.host.trim() == 'demo.fleaflet.dev') {
+//   //     SchedulerBinding.instance.addPostFrameCallback(
+//   //       (_) async {
+//   //         final prefs = await SharedPreferences.getInstance();
+//   //         if (prefs.getBool(seenIntroBoxKey) ?? false) return;
+
+//   //         if (!mounted) return;
+
+//   //         final width = MediaQuery.of(context).size.width;
+//   //         await showDialog<void>(
+//   //           context: context,
+//   //           builder: (context) => AlertDialog(
+//   //             icon: UnconstrainedBox(
+//   //               child: SizedBox.square(
+//   //                 dimension: 64,
+//   //                 child:
+//   //                     Image.asset('assets/ProjectIcon.png', fit: BoxFit.fill),
+//   //               ),
+//   //             ),
+//   //             title: const Text('flutter_map Live Web Demo'),
+//   //             content: ConstrainedBox(
+//   //               constraints: BoxConstraints(
+//   //                 maxWidth: width < 750
+//   //                     ? double.infinity
+//   //                     : (width / (width < 1100 ? 1.5 : 2.5)),
+//   //               ),
+//   //               child: Column(
+//   //                 mainAxisSize: MainAxisSize.min,
+//   //                 children: [
+//   //                   const Text(
+//   //                     "This is built automatically off of the latest commits to 'master', so may not reflect the latest release available on pub.dev.\nThis is hosted on Firebase Hosting, meaning there's limited bandwidth to share between all users, so please keep loads to a minimum.",
+//   //                     textAlign: TextAlign.center,
+//   //                   ),
+//   //                   Padding(
+//   //                     padding:
+//   //                         const EdgeInsets.only(right: 8, top: 16, bottom: 4),
+//   //                     child: Align(
+//   //                       alignment: Alignment.centerRight,
+//   //                       child: Text(
+//   //                         "This won't be shown again",
+//   //                         style: TextStyle(
+//   //                           color: Theme.of(context)
+//   //                               .colorScheme
+//   //                               .inverseSurface
+//   //                               .withOpacity(0.5),
+//   //                         ),
+//   //                         textAlign: TextAlign.right,
+//   //                       ),
+//   //                     ),
+//   //                   ),
+//   //                 ],
+//   //               ),
+//   //             ),
+//   //             actions: [
+//   //               TextButton.icon(
+//   //                 onPressed: () => Navigator.of(context).pop(),
+//   //                 label: const Text('OK'),
+//   //                 icon: const Icon(Icons.done),
+//   //               ),
+//   //             ],
+//   //             contentPadding: const EdgeInsets.only(
+//   //               left: 24,
+//   //               top: 16,
+//   //               bottom: 0,
+//   //               right: 24,
+//   //             ),
+//   //           ),
+//   //         );
+//   //         await prefs.setBool(seenIntroBoxKey, true);
+//   //       },
+//   //     );
+//   //   }
+//   // }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: const Text('Home')),
 //       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
+//         padding: const EdgeInsets.all(8),
 //         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
 //           children: [
-//             Text(
-//               'Enter your location:',
-//               style: TextStyle(
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//               ),
+//             const Padding(
+//               padding: EdgeInsets.only(top: 8, bottom: 8),
+//               child: Text('This is a map that is showing (51.5, -0.9).'),
 //             ),
-//             SizedBox(height: 8),
-//             TextFormField(
-//               decoration: InputDecoration(
-//                 hintText: 'Enter your location',
-//                 border: OutlineInputBorder(),
+//             Flexible(
+//               child: FlutterMap(
+//                 options: MapOptions(
+//                   center: const LatLng(51.5, -0.09),
+//                   zoom: 5,
+//                   maxBounds: LatLngBounds(
+//                     const LatLng(-90, -180),
+//                     const LatLng(90, 180),
+//                   ),
+//                 ),
+//                 nonRotatedChildren: [
+//                   RichAttributionWidget(
+//                     popupInitialDisplayDuration: const Duration(seconds: 5),
+//                     animationConfig: const ScaleRAWA(),
+//                     attributions: [
+//                       TextSourceAttribution(
+//                         'OpenStreetMap contributors',
+//                         // onTap: () => launchUrl(
+//                         //   Uri.parse('https://openstreetmap.org/copyright'),
+//                         // ),
+//                       ),
+//                       const TextSourceAttribution(
+//                         'This attribution is the same throughout this app, except where otherwise specified',
+//                         prependCopyright: false,
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//                 children: [
+//                   TileLayer(
+//                     urlTemplate:
+//                         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+//                     userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+//                   ),
+//                   MarkerLayer(
+//                     markers: [
+//                       Marker(
+//                         width: 80,
+//                         height: 80,
+//                         point: const LatLng(51.5, -0.09),
+//                         builder: (ctx) => const FlutterLogo(
+//                           textColor: Colors.blue,
+//                           key: ObjectKey(Colors.blue),
+//                         ),
+//                       ),
+//                       Marker(
+//                         width: 80,
+//                         height: 80,
+//                         point: const LatLng(53.3498, -6.2603),
+//                         builder: (ctx) => const FlutterLogo(
+//                           textColor: Colors.green,
+//                           key: ObjectKey(Colors.green),
+//                         ),
+//                       ),
+//                       Marker(
+//                         width: 80,
+//                         height: 80,
+//                         point: const LatLng(48.8566, 2.3522),
+//                         builder: (ctx) => const FlutterLogo(
+//                           textColor: Colors.purple,
+//                           key: ObjectKey(Colors.purple),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
 //               ),
-//             ),
-//             SizedBox(height: 16),
-//             Text(
-//               'Describe the issue:',
-//               style: TextStyle(
-//                 fontSize: 18,
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//             SizedBox(height: 8),
-//             TextFormField(
-//               decoration: InputDecoration(
-//                 hintText: 'Describe the issue',
-//                 border: OutlineInputBorder(),
-//               ),
-//               maxLines: 5,
-//             ),
-//             SizedBox(height: 16),
-//             ElevatedButton(
-//               onPressed: () {
-//                 // Logic to submit the request
-//               },
-//               child: Text('Submit Request'),
 //             ),
 //           ],
 //         ),

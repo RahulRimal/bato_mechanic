@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
 
+import 'track_mechanic_screen.dart';
+
 class PartsScreen extends StatelessWidget {
   const PartsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    List<PartsCategory> _categories = [
+    List<PartsCategory> categories = [
       PartsCategory(
         name: 'Wheels',
-        image: 'images/parts/wheel.png',
+        image: 'assets/images/parts/wheel.png',
       ),
       PartsCategory(
         name: 'Engine',
-        image: 'images/parts/engine.png',
+        image: 'assets/images/parts/engine.png',
       ),
       PartsCategory(
         name: 'Electricity',
-        image: 'images/parts/electricity.png',
+        image: 'assets/images/parts/electricity.png',
       ),
       PartsCategory(
         name: 'Body',
-        image: 'images/parts/body.png',
+        image: 'assets/images/parts/body.png',
       ),
       PartsCategory(
         name: 'Accessories',
-        image: 'images/parts/accessories.png',
+        image: 'assets/images/parts/accessories.png',
       ),
     ];
     return Scaffold(
@@ -34,10 +36,10 @@ class PartsScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(
+            const SizedBox(
               height: 200,
             ),
-            Text(
+            const Text(
               'Where is the problem being occured?',
               style: TextStyle(
                 color: Colors.black,
@@ -47,45 +49,50 @@ class PartsScreen extends StatelessWidget {
             ),
             GridView.builder(
               shrinkWrap: true,
-              itemCount: _categories.length,
+              itemCount: categories.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
               ),
-              itemBuilder: (context, index) => Container(
-                margin: EdgeInsets.all(8),
-                padding: EdgeInsets.all(8),
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: Colors.amberAccent[200],
-                  borderRadius: BorderRadius.circular(
-                    20,
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TrackMechanicScreen(
+                      mechanicName: 'John Doe',
+                      estimatedTimeOfArrival: '10 minutes',
+                      mechanicLocation: '123 Main Street',
+                    ),
                   ),
                 ),
-                child: Column(
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.amberAccent[200],
+                    borderRadius: BorderRadius.circular(
+                      20,
+                    ),
+                  ),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.asset(
-                        _categories[index].image,
+                        categories[index].image,
                         width: 100,
                       ),
                       Text(
-                        _categories[index].name,
-                        style: TextStyle(
+                        categories[index].name,
+                        style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      // Text(
-                      //   // 'Small four wheeler',
-                      //   _vehicles[index].tagLine,
-                      //   style: TextStyle(
-                      //     fontSize: 12,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // )
-                    ]),
+                    ],
+                  ),
+                ),
               ),
             ),
           ]),
