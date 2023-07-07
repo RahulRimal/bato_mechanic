@@ -1,3 +1,4 @@
+import 'package:bato_mechanic/screens/request_mechanic_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'track_mechanic_screen.dart';
@@ -57,11 +58,12 @@ class PartsScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const TrackMechanicScreen(
-                      mechanicName: 'John Doe',
-                      estimatedTimeOfArrival: '10 minutes',
-                      mechanicLocation: '123 Main Street',
-                    ),
+                    // builder: (context) => const TrackMechanicScreen(
+                    //   mechanicName: 'John Doe',
+                    //   estimatedTimeOfArrival: '10 minutes',
+                    //   mechanicLocation: '123 Main Street',
+                    // ),
+                    builder: (context) => const RequestMechanicScreen(),
                   ),
                 ),
                 child: Container(

@@ -1,12 +1,15 @@
 import 'dart:io';
+import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
+
 import 'package:video_player/video_player.dart';
 
-import '../utils/flutter_map_utils/scale_layer_plugin_option.dart';
+import '../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
 
 class RequestMechanicScreen extends StatefulWidget {
   const RequestMechanicScreen({Key? key}) : super(key: key);
@@ -87,183 +90,276 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
       appBar: AppBar(
         title: const Text('Request Mechanic'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Provide your location:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Provide your location:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            _currentLocation != null
-                ? Flexible(
-                    child: FlutterMap(
-                      options: MapOptions(
-                        center:
-
-                            // const LatLng(85.33033043146135, 27.703292452047425),
-                            const LatLng(27.703292452047425, 85.33033043146135),
-                        zoom: 16.0,
-                        // maxBounds: LatLngBounds(
-                        //   const LatLng(-90, -180),
-                        //   const LatLng(90, 180),
-                        // ),
-                      ),
-                      nonRotatedChildren: [
-                        // RichAttributionWidget(
-                        //   popupInitialDisplayDuration:
-                        //       const Duration(seconds: 5),
-                        //   animationConfig: const ScaleRAWA(),
-                        //   attributions: [
-                        //     TextSourceAttribution(
-                        //       'OpenStreetMap contributors',
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 400,
+                child: _currentLocation != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        // child: FlutterMap(
+                        //   options: MapOptions(
+                        //     center:
+                        //         LatLng(27.703292452047425, 85.33033043146135),
+                        //     zoom: 16.0,
+                        //   ),
+                        //   nonRotatedChildren: [
+                        //     // RichAttributionWidget(
+                        //     //   popupInitialDisplayDuration:
+                        //     //       const Duration(seconds: 5),
+                        //     //   animationConfig: const ScaleRAWA(),
+                        //     //   attributions: [
+                        //     //     TextSourceAttribution(
+                        //     //       'OpenStreetMap contributors',
+                        //     //     ),
+                        //     //     const TextSourceAttribution(
+                        //     //       'This attribution is the same throughout this app, except where otherwise specified',
+                        //     //       prependCopyright: false,
+                        //     //     ),
+                        //     //   ],
+                        //     // ),
+                        //     // ScaleLayerWidget(
+                        //     //   options: ScaleLayerPluginOption(
+                        //     //     lineColor: Colors.black,
+                        //     //     lineWidth: 2,
+                        //     //     textStyle: const TextStyle(
+                        //     //       color: Colors.black,
+                        //     //       fontSize: 12,
+                        //     //     ),
+                        //     //     padding: const EdgeInsets.all(10),
+                        //     //   ),
+                        //     // ),
+                        //   ],
+                        //   children: [
+                        //     TileLayer(
+                        //       urlTemplate:
+                        //           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        //       userAgentPackageName:
+                        //           'dev.fleaflet.flutter_map.example',
+                        //       tileProvider: NetworkTileProvider(),
                         //     ),
-                        //     const TextSourceAttribution(
-                        //       'This attribution is the same throughout this app, except where otherwise specified',
-                        //       prependCopyright: false,
+                        //     MarkerLayer(
+                        //       markers: [
+                        //         Marker(
+                        //           width: 80,
+                        //           height: 80,
+                        //           point: LatLng(
+                        //               27.703292452047425, 85.33033043146135),
+                        //           builder: (ctx) => Container(
+                        //             child: Icon(
+                        //               Icons.location_on,
+                        //               color: Colors.orange,
+                        //               size: 40.0,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //         Marker(
+                        //           width: 80,
+                        //           height: 80,
+                        //           point: LatLng(
+                        //               27.707645262018172, 85.33825904130937),
+                        //           builder: (ctx) => Container(
+                        //             child: Icon(
+                        //               Icons.location_on,
+                        //               color: Colors.purple,
+                        //               size: 40.0,
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ],
                         //     ),
                         //   ],
                         // ),
 
-                        ScaleLayerWidget(
-                          options: ScaleLayerPluginOption(
-                            lineColor: Colors.black,
-                            lineWidth: 2,
-                            textStyle: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                            ),
-                            padding: const EdgeInsets.all(10),
-                          ),
-                        ),
-                      ],
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName:
-                              'dev.fleaflet.flutter_map.example',
-                          tileProvider: NetworkTileProvider(),
-                        ),
-                        MarkerLayer(
-                          markers: [
-                            Marker(
-                              width: 80,
-                              height: 80,
-                              point: const LatLng(
-                                  27.703292452047425, 85.33033043146135),
-                              builder: (ctx) => Container(
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.orange,
-                                  size: 40.0,
-                                ),
-                              ),
-                            ),
-                            Marker(
-                              width: 80,
-                              height: 80,
-                              point: const LatLng(
-                                  27.707645262018172, 85.33825904130937),
-                              builder: (ctx) => Container(
-                                child: Icon(
-                                  Icons.location_on,
-                                  color: Colors.purple,
-                                  size: 40.0,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                : const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            const Text(
-              'Describe the issue:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+                        child: FlutterLocationPicker(
+                          initZoom: 11,
+                          minZoomLevel: 5,
+                          maxZoomLevel: 16,
+                          trackMyPosition: true,
+                          searchBarBackgroundColor: Colors.white,
+                          mapLanguage: 'en',
+                          selectLocationButtonText: 'Set this location',
+                          onError: (e) => print(e),
+                          onPicked: (pickedData) {
+                            print(pickedData.latLong.latitude);
+                            print(pickedData.latLong.longitude);
+                            print(pickedData.address);
+                            print(pickedData.addressData['country']);
+                          },
+                        ))
+                    : Center(child: const CircularProgressIndicator()),
               ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              decoration: const InputDecoration(
-                hintText: 'Describe the issue',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 5,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Attach photos:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: _pickImage,
-                  child: const Text('Add Photo'),
+              const SizedBox(height: 16),
+              const Text(
+                'Describe the issue:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _selectedImages.map((File image) {
-                        return Container(
-                          margin: const EdgeInsets.only(right: 8.0),
-                          width: 80,
-                          height: 80,
-                          child: Image.file(image, fit: BoxFit.cover),
-                        );
-                      }).toList(),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                decoration: const InputDecoration(
+                  hintText: 'Describe the issue',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 5,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Attach photos:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    child: const Text('Add Photo'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: _selectedImages.map((File image) {
+                          return Container(
+                            margin: const EdgeInsets.only(right: 8.0),
+                            width: 80,
+                            height: 80,
+                            child: Image.file(image, fit: BoxFit.cover),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Attach a video:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Attach a video:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: _pickVideo,
-              child: const Text('Add Video'),
-            ),
-            if (_videoController != null)
-              AspectRatio(
-                aspectRatio: _videoController!.value.aspectRatio,
-                child: VideoPlayer(_videoController!),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: _pickVideo,
+                child: const Text('Add Video'),
               ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Logic to submit the request
-              },
-              child: const Text('Submit Request'),
-            ),
-          ],
+              if (_videoController != null)
+                AspectRatio(
+                  aspectRatio: _videoController!.value.aspectRatio,
+                  child: VideoPlayer(_videoController!),
+                ),
+              const SizedBox(height: 16),
+              const Text(
+                'Select prefered mechanic',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                height: 130,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.amberAccent[200],
+                          borderRadius: BorderRadius.circular(
+                            20,
+                          ),
+                        ),
+                        child: SizedBox(
+                          width: 130,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Expanded(
+                                child: Image.asset(
+                                  'assets/images/no-profile.png',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      '4.5',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 4,
+                                    ),
+                                    Icon(
+                                      Icons.star,
+                                      size: 18,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TrackMechanicScreen(
+                        mechanicName: 'Suman Kanu',
+                        estimatedTimeOfArrival: '10 minutes',
+                        mechanicLocation: 'Muglin Road'),
+                  ),
+                ),
+                child: const Text('Request for a mechanic'),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+
 
 // -------------------------------------- Map integration using google maps starts here -------------------------------------------
 

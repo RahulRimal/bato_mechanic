@@ -3,9 +3,11 @@ import 'package:bato_mechanic/screens/mechanic_profile_screen.dart';
 import 'package:bato_mechanic/screens/rating_and_reviews_screen.dart';
 import 'package:bato_mechanic/screens/service_history_screen.dart';
 import 'package:bato_mechanic/screens/support_chat_screen.dart';
+import 'package:bato_mechanic/screens/temp_screen.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_detail_screen.dart';
 import 'package:bato_mechanic/screens/vehicles_screen.dart';
+import 'package:bato_mechanic/widgets/flutter_map_search_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'models/vehicle.dart';
@@ -44,16 +46,24 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
       // home: const HomeScreen(),
-      home: VehiclesScreen(),
-      // home: RequestMechanicScreen(),
+      // home: VehiclesScreen(),
+      // home: TempScreen(),
       // home: MechanicProfileScreen(
       //     mechanicName: 'Sam',
       //     specialization: 'Heavy Machinary',
       //     experience: '3 years',
       //     rating: 4.5,
       //     imagePath: 'assets/images/parts/wheel.png'),
+      // home: RequestMechanicScreen(),
+      home: SafeArea(
+        child: Scaffold(
+          body: FlutterMapSearchWidget(),
+        ),
+      ),
+      // home: RequestMechanicScreen(),
       // home: TrackMechanicScreen(
       //     mechanicName: 'Suman Kanu',
       //     estimatedTimeOfArrival: '10 minutes',

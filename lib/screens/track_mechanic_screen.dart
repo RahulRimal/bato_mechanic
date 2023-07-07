@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
-import '../data/system_api.dart';
-import '../utils/flutter_map_utils/scale_layer_plugin_option.dart';
+import '../data/map_api.dart';
+import '../utils/flutter_map_utils/control_buttons/control_buttons.dart';
+import '../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
 
 class TrackMechanicScreen extends StatefulWidget {
   final String mechanicName;
@@ -25,16 +27,18 @@ class TrackMechanicScreen extends StatefulWidget {
 class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
   Position? _currentLocation;
   List<LatLng> routeCoordinatePoints = [];
+  bool _showBigScreenMap = false;
 
   _getRouteCoordinates() async {
-    var points = await SystemApi.getRoute(
-        '85.33033043146135,27.703292452047425',
+    var points = await MapApi.getRoute('85.33033043146135,27.703292452047425',
         '85.33825904130937, 27.707645262018172');
 
-    routeCoordinatePoints = points
-        .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
-        .toList()
-        .cast<LatLng>();
+    setState(() {
+      routeCoordinatePoints = points
+          .map((point) => LatLng(point[1].toDouble(), point[0].toDouble()))
+          .toList()
+          .cast<LatLng>();
+    });
   }
 
   Future<void> _initializeLocation() async {
@@ -113,100 +117,14 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                 },
                 child: Container(
                   height: 400,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+                  // height: _showBigScreenMap
+                  //     ? MediaQuery.of(context).size.height * 0.75
+                  //     : 400,
+
                   child: _currentLocation != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(20.0),
-                          child: FlutterMap(
-                            options: MapOptions(
-                              center: const LatLng(
-                                  27.703292452047425, 85.33033043146135),
-                              zoom: 15.0,
-                              bounds: LatLngBounds(
-                                  LatLng(27.703292452047425, 85.33033043146135),
-                                  LatLng(
-                                      27.707645262018172, 85.33825904130937)),
-                            ),
-                            nonRotatedChildren: [
-                              // RichAttributionWidget(
-                              //   popupInitialDisplayDuration:
-                              //       const Duration(seconds: 5),
-                              //   animationConfig: const ScaleRAWA(),
-                              //   attributions: [
-                              //     TextSourceAttribution(
-                              //       'OpenStreetMap contributors',
-                              //     ),
-                              //     const TextSourceAttribution(
-                              //       'This attribution is the same throughout this app, except where otherwise specified',
-                              //       prependCopyright: false,
-                              //     ),
-                              //   ],
-                              // ),
-
-                              ScaleLayerWidget(
-                                options: ScaleLayerPluginOption(
-                                  lineColor: Colors.black,
-                                  lineWidth: 2,
-                                  textStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 12,
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                ),
-                              ),
-                            ],
-                            children: [
-                              TileLayer(
-                                urlTemplate:
-                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                userAgentPackageName:
-                                    'dev.fleaflet.flutter_map.example',
-                                tileProvider: NetworkTileProvider(),
-                              ),
-                              MarkerLayer(
-                                markers: [
-                                  Marker(
-                                    width: 80,
-                                    height: 80,
-                                    point: const LatLng(
-                                        27.703292452047425, 85.33033043146135),
-                                    builder: (ctx) => Container(
-                                      child: Icon(
-                                        Icons.location_on,
-                                        color: Colors.orange,
-                                        size: 40.0,
-                                      ),
-                                    ),
-                                  ),
-                                  Marker(
-                                    width: 80,
-                                    height: 80,
-                                    point: const LatLng(
-                                        27.707645262018172, 85.33825904130937),
-                                    builder: (ctx) => Container(
-                                      child: Icon(
-                                        Icons.location_on,
-                                        color: Colors.purple,
-                                        size: 40.0,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              PolylineLayer(
-                                polylines: [
-                                  Polyline(
-                                    points: routeCoordinatePoints,
-                                    strokeWidth: 4,
-                                    color: Colors.purple,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                          child: _showMechanicTrackMap(context),
                         )
                       : Center(child: const CircularProgressIndicator()),
                 ),
@@ -359,6 +277,159 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  FlutterMap _showMechanicTrackMap(BuildContext context) {
+    LatLng cameraCenter = LatLng(27.703292452047425, 85.33033043146135);
+    MapController mapController = new MapController();
+    return FlutterMap(
+      mapController: mapController,
+      options: MapOptions(
+        onTap: (tapPosition, latLng) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                insetPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.zero,
+                content: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: _showMechanicTrackMap(context)),
+              );
+            },
+          );
+        },
+        center: cameraCenter,
+        zoom: 15.0,
+        bounds: LatLngBounds(LatLng(27.703292452047425, 85.33033043146135),
+            LatLng(27.707645262018172, 85.33825904130937)),
+      ),
+      nonRotatedChildren: [
+        RichAttributionWidget(
+          popupInitialDisplayDuration: const Duration(seconds: 5),
+          animationConfig: const ScaleRAWA(),
+          showFlutterMapAttribution: false,
+          attributions: [
+            TextSourceAttribution(
+              'Full Screen Mode',
+              prependCopyright: false,
+            ),
+            const TextSourceAttribution(
+              'Tap on the map to show full screen map',
+              prependCopyright: false,
+            ),
+          ],
+        ),
+
+        // Align(
+        //   alignment: Alignment.bottomCenter,
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       setState(() {
+        //         _showBigScreenMap = !_showBigScreenMap;
+        //       });
+        //     },
+        //     child: _showBigScreenMap
+        //         ? Text('Show small screen map')
+        //         : Text('Show full screen map'),
+        //   ),
+        // ),
+
+        ScaleLayerWidget(
+          options: ScaleLayerPluginOption(
+            lineColor: Colors.black,
+            lineWidth: 2,
+            textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+            ),
+            padding: const EdgeInsets.all(10),
+          ),
+        ),
+
+        // Align(
+        //   alignment: Alignment.bottomRight,
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(
+        //       bottom: 30,
+        //       right: 10,
+        //     ),
+        //     child: FloatingActionButton(
+        //       onPressed: () {
+        //         setState(() {
+        //           cameraCenter = LatLng(
+        //               _currentLocation!.latitude, _currentLocation!.longitude);
+        //         });
+        //       },
+        //       child: Icon(
+        //         Icons.my_location,
+        //       ),
+        //     ),
+        //   ),
+        // ),
+
+        FlutterMapControlButtons(
+          minZoom: 4,
+          maxZoom: 19,
+          mini: false,
+          padding: 10,
+          alignment: Alignment.bottomRight,
+          mapController: mapController,
+          // currentLocation: _currentLocation,
+        ),
+        CurrentLocationLayer(),
+      ],
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+          tileProvider: NetworkTileProvider(),
+        ),
+        MarkerLayer(
+          markers: [
+            Marker(
+              width: 80,
+              height: 80,
+              point: LatLng(27.703292452047425, 85.33033043146135),
+              builder: (ctx) => Container(
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.orange,
+                  size: 40.0,
+                ),
+              ),
+            ),
+            Marker(
+              width: 80,
+              height: 80,
+              point: LatLng(27.707645262018172, 85.33825904130937),
+              builder: (ctx) => Container(
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.purple,
+                  size: 40.0,
+                ),
+              ),
+            ),
+          ],
+        ),
+        PolylineLayer(
+          polylines: [
+            Polyline(
+              points: routeCoordinatePoints,
+              strokeWidth: 4,
+              color: Colors.purple,
+            ),
+          ],
+        ),
+        // CurrentLocationLayer(
+        //   style: const LocationMarkerStyle(
+        //     markerDirection: MarkerDirection.heading,
+        //   ),
+        // ),
+      ],
     );
   }
 }
