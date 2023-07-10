@@ -7,8 +7,10 @@ import 'package:bato_mechanic/screens/temp_screen.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_detail_screen.dart';
 import 'package:bato_mechanic/screens/vehicles_screen.dart';
-import 'package:bato_mechanic/widgets/flutter_map_search_widget.dart';
+import 'package:bato_mechanic/view_models/providers/map_provider.dart';
+import 'package:bato_mechanic/widgets/map_search_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'models/vehicle.dart';
 import 'screens/authentication_screen.dart';
@@ -25,63 +27,52 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-
-      // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      // home: const HomeScreen(),
-      // home: VehiclesScreen(),
-      // home: TempScreen(),
-      // home: MechanicProfileScreen(
-      //     mechanicName: 'Sam',
-      //     specialization: 'Heavy Machinary',
-      //     experience: '3 years',
-      //     rating: 4.5,
-      //     imagePath: 'assets/images/parts/wheel.png'),
-      // home: RequestMechanicScreen(),
-      home: SafeArea(
-        child: Scaffold(
-          body: FlutterMapSearchWidget(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => MapProvider(),
         ),
+      ],
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+
+        // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        // home: const HomeScreen(),
+        // home: VehiclesScreen(),
+        home: Scaffold(body: MapSearchWidget()),
+        // home: TempScreen(),
+        // home: MechanicProfileScreen(
+        //     mechanicName: 'Sam',
+        //     specialization: 'Heavy Machinary',
+        //     experience: '3 years',
+        //     rating: 4.5,
+        //     imagePath: 'assets/images/parts/wheel.png'),
+        // home: RequestMechanicScreen(),
+
+        // home: RequestMechanicScreen(),
+        // home: TrackMechanicScreen(
+        //     mechanicName: 'Suman Kanu',
+        //     estimatedTimeOfArrival: '10 minutes',
+        //     mechanicLocation: 'Muglin Road'),
+        // home: AuthenticationScreen(),
+        // home: VehicleDetailsScreen(
+        //   vehicle: Vehicle(
+        //     name: 'Car',
+        //     image: 'assets/images/vehicle/car.png',
+        //     type: '4 wheeler',
+        //     tagLine: 'Small four wheeler',
+        //   ),
+        // ),
+        // home: ServiceHistoryScreen(),
+        // home: RatingsAndReviewsScreen(),
+        // home: SupportChatScreen(),
+        // home: FeedbackContactScreen() ,
+        // home: const PaymentIntegrationScreen(),
       ),
-      // home: RequestMechanicScreen(),
-      // home: TrackMechanicScreen(
-      //     mechanicName: 'Suman Kanu',
-      //     estimatedTimeOfArrival: '10 minutes',
-      //     mechanicLocation: 'Muglin Road'),
-      // home: AuthenticationScreen(),
-      // home: VehicleDetailsScreen(
-      //   vehicle: Vehicle(
-      //     name: 'Car',
-      //     image: 'assets/images/vehicle/car.png',
-      //     type: '4 wheeler',
-      //     tagLine: 'Small four wheeler',
-      //   ),
-      // ),
-      // home: ServiceHistoryScreen(),
-      // home: RatingsAndReviewsScreen(),
-      // home: SupportChatScreen(),
-      // home: FeedbackContactScreen() ,
-      // home: const PaymentIntegrationScreen(),
     );
   }
 }

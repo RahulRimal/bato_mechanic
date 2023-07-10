@@ -1,6 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
+
+import '../models/system_models.dart';
+import '../screens/managers/strings_manager.dart';
+import '../screens/managers/values_manager.dart';
 
 class MapApi {
   static getRoute(String sourcePoint, String destinationPoint) async {
@@ -54,36 +59,45 @@ class MapApi {
     }
   }
 
-
   static getLocationName(double latitude, double longitude) async {
     try {
       String url =
           'https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&zoom=18&addressdetails=1&accept-language=en';
       var response = await http.post(Uri.parse(url));
 
-      if (response.statusCode == 200) {
+      // if (response.statusCode == 200) {
 
-        return json.decode(response.body)['display_name'];
-        
-        // var decodedResponse =
-        //     jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>;
-
-        // return decodedResponse;
-      } else {
-        // throw Exception('Failed to get route');
-        print('Failed to get route');
+      //   return json.decode(response.body)['display_name'];
+      // } else {
+      //   // throw Exception('Failed to get route');
+      //   print('Failed to get route');
+      // }
+      if (response.statusCode == ApiStatusCode.responseSuccess) {
+        return Success(
+          code: response.statusCode,
+          response: json.decode(response.body)['display_name'],
+        );
       }
-
-      // _options = decodedResponse
-      //     .map((e) => OSMdata(
-      //         displayname: e['display_name'],
-      //         latitude: double.parse(e['lat']),
-      //         longitude: double.parse(e['lon'])))
-      //     .toList();
-      // setState(() {});
-    } on Exception catch (e) {
-      print('here');
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidResponseString,
+      );
+    } on HttpException {
+      return Failure(
+        code: ApiStatusCode.httpError,
+        errorResponse: ApiStrings.noInternetString,
+      );
+    } on FormatException {
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidFormatString,
+      );
+    } catch (e) {
+      // return Failure(code: 103, errorResponse: e.toString());
+      return Failure(
+        code: ApiStatusCode.unknownError,
+        errorResponse: ApiStrings.unknownErrorString,
+      );
     }
   }
-
 }

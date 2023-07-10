@@ -10,6 +10,7 @@ import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import 'package:video_player/video_player.dart';
 
 import '../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
+import '../widgets/map_search_widget.dart';
 
 class RequestMechanicScreen extends StatefulWidget {
   const RequestMechanicScreen({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class RequestMechanicScreen extends StatefulWidget {
 }
 
 class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
-  Position? _currentLocation;
+  // Position? _currentLocation;
   VideoPlayerController? _videoController;
   final List<File> _selectedImages = [];
   final ImagePicker _imagePicker = ImagePicker();
@@ -27,7 +28,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeLocation();
+    // _initializeLocation();
   }
 
   @override
@@ -36,33 +37,30 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
     super.dispose();
   }
 
-  Future<void> _initializeLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    Position position;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await Geolocator.openLocationSettings();
-      if (!serviceEnabled) {
-        return;
-      }
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.whileInUse &&
-          permission != LocationPermission.always) {
-        return;
-      }
-    }
-
-    position = await Geolocator.getCurrentPosition();
-    setState(() {
-      _currentLocation = position;
-    });
-  }
+  // Future<void> _initializeLocation() async {
+  //   bool serviceEnabled;
+  //   LocationPermission permission;
+  //   Position position;
+  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //   if (!serviceEnabled) {
+  //     serviceEnabled = await Geolocator.openLocationSettings();
+  //     if (!serviceEnabled) {
+  //       return;
+  //     }
+  //   }
+  //   permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //     if (permission != LocationPermission.whileInUse &&
+  //         permission != LocationPermission.always) {
+  //       return;
+  //     }
+  //   }
+  //   position = await Geolocator.getCurrentPosition();
+  //   setState(() {
+  //     _currentLocation = position;
+  //   });
+  // }
 
   Future<void> _pickImage() async {
     final XFile? image =
@@ -106,100 +104,34 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
               const SizedBox(height: 8),
               SizedBox(
                 height: 400,
-                child: _currentLocation != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        // child: FlutterMap(
-                        //   options: MapOptions(
-                        //     center:
-                        //         LatLng(27.703292452047425, 85.33033043146135),
-                        //     zoom: 16.0,
-                        //   ),
-                        //   nonRotatedChildren: [
-                        //     // RichAttributionWidget(
-                        //     //   popupInitialDisplayDuration:
-                        //     //       const Duration(seconds: 5),
-                        //     //   animationConfig: const ScaleRAWA(),
-                        //     //   attributions: [
-                        //     //     TextSourceAttribution(
-                        //     //       'OpenStreetMap contributors',
-                        //     //     ),
-                        //     //     const TextSourceAttribution(
-                        //     //       'This attribution is the same throughout this app, except where otherwise specified',
-                        //     //       prependCopyright: false,
-                        //     //     ),
-                        //     //   ],
-                        //     // ),
-                        //     // ScaleLayerWidget(
-                        //     //   options: ScaleLayerPluginOption(
-                        //     //     lineColor: Colors.black,
-                        //     //     lineWidth: 2,
-                        //     //     textStyle: const TextStyle(
-                        //     //       color: Colors.black,
-                        //     //       fontSize: 12,
-                        //     //     ),
-                        //     //     padding: const EdgeInsets.all(10),
-                        //     //   ),
-                        //     // ),
-                        //   ],
-                        //   children: [
-                        //     TileLayer(
-                        //       urlTemplate:
-                        //           'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        //       userAgentPackageName:
-                        //           'dev.fleaflet.flutter_map.example',
-                        //       tileProvider: NetworkTileProvider(),
-                        //     ),
-                        //     MarkerLayer(
-                        //       markers: [
-                        //         Marker(
-                        //           width: 80,
-                        //           height: 80,
-                        //           point: LatLng(
-                        //               27.703292452047425, 85.33033043146135),
-                        //           builder: (ctx) => Container(
-                        //             child: Icon(
-                        //               Icons.location_on,
-                        //               color: Colors.orange,
-                        //               size: 40.0,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //         Marker(
-                        //           width: 80,
-                        //           height: 80,
-                        //           point: LatLng(
-                        //               27.707645262018172, 85.33825904130937),
-                        //           builder: (ctx) => Container(
-                        //             child: Icon(
-                        //               Icons.location_on,
-                        //               color: Colors.purple,
-                        //               size: 40.0,
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
-
-                        child: FlutterLocationPicker(
-                          initZoom: 11,
-                          minZoomLevel: 5,
-                          maxZoomLevel: 16,
-                          trackMyPosition: true,
-                          searchBarBackgroundColor: Colors.white,
-                          mapLanguage: 'en',
-                          selectLocationButtonText: 'Set this location',
-                          onError: (e) => print(e),
-                          onPicked: (pickedData) {
-                            print(pickedData.latLong.latitude);
-                            print(pickedData.latLong.longitude);
-                            print(pickedData.address);
-                            print(pickedData.addressData['country']);
-                          },
-                        ))
-                    : Center(child: const CircularProgressIndicator()),
+                // child: _currentLocation != null
+                //     ? ClipRRect(
+                //         borderRadius: BorderRadius.circular(8),
+                //         // child: FlutterLocationPicker(
+                //         //   initZoom: 11,
+                //         //   minZoomLevel: 5,
+                //         //   maxZoomLevel: 16,
+                //         //   trackMyPosition: true,
+                //         //   searchBarBackgroundColor: Colors.white,
+                //         //   mapLanguage: 'en',
+                //         //   selectLocationButtonText: 'Set this location',
+                //         //   onError: (e) => print(e),
+                //         //   onPicked: (pickedData) {
+                //         //     print(pickedData.latLong.latitude);
+                //         //     print(pickedData.latLong.longitude);
+                //         //     print(pickedData.address);
+                //         //     print(pickedData.addressData['country']);
+                //         //   },
+                //         // ),
+                //         child: FlutterMapSearchWidget(),
+                //       )
+                //     : Center(
+                //         child: const CircularProgressIndicator(),
+                //       ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: MapSearchWidget(),
+                ),
               ),
               const SizedBox(height: 16),
               const Text(
