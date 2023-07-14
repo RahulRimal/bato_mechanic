@@ -6,8 +6,12 @@ import 'package:bato_mechanic/screens/support_chat_screen.dart';
 import 'package:bato_mechanic/screens/temp_screen.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_detail_screen.dart';
-import 'package:bato_mechanic/screens/vehicles_screen.dart';
+import 'package:bato_mechanic/screens/vehicle_category_screen.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
+import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
+import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
+import 'package:bato_mechanic/view_models/providers/vehicle_part_provider.dart';
+import 'package:bato_mechanic/view_models/providers/vehicle_provider.dart';
 import 'package:bato_mechanic/widgets/map_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +36,18 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => MapProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => VehicleCategoryProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => VehicleProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => VehiclePartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MechanicProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -42,8 +58,8 @@ class MyApp extends StatelessWidget {
 
         // home: const MyHomePage(title: 'Flutter Demo Home Page'),
         // home: const HomeScreen(),
-        // home: VehiclesScreen(),
-        home: Scaffold(body: MapSearchWidget()),
+        home: VehicleCategoryScreen(),
+        // home: Scaffold(body: MapSearchWidget()),
         // home: TempScreen(),
         // home: MechanicProfileScreen(
         //     mechanicName: 'Sam',

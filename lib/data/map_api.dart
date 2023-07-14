@@ -9,25 +9,44 @@ import '../screens/managers/values_manager.dart';
 
 class MapApi {
   static getRoute(String sourcePoint, String destinationPoint) async {
-    var url = Uri.parse(
-        'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b60a25fd6a3d4feebc3315580a66b8e8&start=$sourcePoint&end=$destinationPoint');
+    try {
+      var url = Uri.parse(
+          'https://api.openrouteservice.org/v2/directions/driving-car?api_key=5b3ce3597851110001cf6248b60a25fd6a3d4feebc3315580a66b8e8&start=$sourcePoint&end=$destinationPoint');
 
-    var response = await http.get(
-      url,
-      // headers: {
-      //   HttpHeaders.authorizationHeader: "SL " + loggedInUser.accessToken
-      // },
-    );
+      var response = await http.get(
+        url,
+        // headers: {
+        //   HttpHeaders.authorizationHeader: "SL " + loggedInUser.accessToken
+        // },
+      );
 
-    if (response.statusCode == 200) {
-      var data = json.decode(response.body);
-      var listOfCoordinatePoints =
-          data['features'][0]['geometry']['coordinates'];
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        var listOfCoordinatePoints =
+            data['features'][0]['geometry']['coordinates'];
 
-      return listOfCoordinatePoints;
-    } else {
-      // throw Exception('Failed to get route');
-      print('Failed to get route');
+        return listOfCoordinatePoints;
+      }
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidResponseString,
+      );
+    } on HttpException {
+      return Failure(
+        code: ApiStatusCode.httpError,
+        errorResponse: ApiStrings.noInternetString,
+      );
+    } on FormatException {
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidFormatString,
+      );
+    } catch (e) {
+      // return Failure(code: 103, errorResponse: e.toString());
+      return Failure(
+        code: ApiStatusCode.unknownError,
+        errorResponse: ApiStrings.unknownErrorString,
+      );
     }
   }
 
@@ -38,24 +57,32 @@ class MapApi {
       var response = await http.post(Uri.parse(url));
 
       if (response.statusCode == 200) {
-        var decodedResponse =
-            jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>;
-
-        return decodedResponse;
-      } else {
-        // throw Exception('Failed to get route');
-        print('Failed to get route');
+        return Success(
+          code: response.statusCode,
+          response:
+              jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>,
+        );
       }
-
-      // _options = decodedResponse
-      //     .map((e) => OSMdata(
-      //         displayname: e['display_name'],
-      //         latitude: double.parse(e['lat']),
-      //         longitude: double.parse(e['lon'])))
-      //     .toList();
-      // setState(() {});
-    } on Exception catch (e) {
-      print('here');
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidResponseString,
+      );
+    } on HttpException {
+      return Failure(
+        code: ApiStatusCode.httpError,
+        errorResponse: ApiStrings.noInternetString,
+      );
+    } on FormatException {
+      return Failure(
+        code: ApiStatusCode.invalidResponse,
+        errorResponse: ApiStrings.invalidFormatString,
+      );
+    } catch (e) {
+      // return Failure(code: 103, errorResponse: e.toString());
+      return Failure(
+        code: ApiStatusCode.unknownError,
+        errorResponse: ApiStrings.unknownErrorString,
+      );
     }
   }
 

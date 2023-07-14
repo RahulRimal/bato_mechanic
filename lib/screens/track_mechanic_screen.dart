@@ -1,9 +1,11 @@
+import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import '../data/map_api.dart';
 import '../utils/flutter_map_utils/control_buttons/control_buttons.dart';
@@ -283,31 +285,51 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
 
   FlutterMap _showMechanicTrackMap(BuildContext context) {
     LatLng cameraCenter = LatLng(27.703292452047425, 85.33033043146135);
-    MapController mapController = new MapController();
+    MapProvider mapProvider = context.watch<MapProvider>();
     return FlutterMap(
-      mapController: mapController,
+      mapController: mapProvider.mswMapController,
       options: MapOptions(
-        onTap: (tapPosition, latLng) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                insetPadding: EdgeInsets.zero,
-                contentPadding: EdgeInsets.zero,
-                content: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: _showMechanicTrackMap(context)),
-              );
-            },
-          );
-        },
+        // onTap: (tapPosition, latLng) {
+        //   showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //       return AlertDialog(
+        //         insetPadding: EdgeInsets.zero,
+        //         contentPadding: EdgeInsets.zero,
+        //         content: SizedBox(
+        //             height: MediaQuery.of(context).size.height,
+        //             width: MediaQuery.of(context).size.width,
+        //             child: _showMechanicTrackMap(context)),
+        //       );
+        //     },
+        //   );
+        // },
         center: cameraCenter,
         zoom: 15.0,
         bounds: LatLngBounds(LatLng(27.703292452047425, 85.33033043146135),
             LatLng(27.707645262018172, 85.33825904130937)),
       ),
       nonRotatedChildren: [
+        ScaleLayerWidget(
+          options: ScaleLayerPluginOption(
+            lineColor: Colors.black,
+            lineWidth: 2,
+            textStyle: const TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+            ),
+            padding: const EdgeInsets.all(10),
+          ),
+        ),
+        FlutterMapControlButtons(
+          minZoom: 4,
+          maxZoom: 19,
+          mini: false,
+          padding: 10,
+          alignment: Alignment.bottomRight,
+          mapController: mapProvider.mswMapController,
+        ),
+        CurrentLocationLayer(),
         RichAttributionWidget(
           popupInitialDisplayDuration: const Duration(seconds: 5),
           animationConfig: const ScaleRAWA(),
@@ -323,65 +345,6 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
             ),
           ],
         ),
-
-        // Align(
-        //   alignment: Alignment.bottomCenter,
-        //   child: ElevatedButton(
-        //     onPressed: () {
-        //       setState(() {
-        //         _showBigScreenMap = !_showBigScreenMap;
-        //       });
-        //     },
-        //     child: _showBigScreenMap
-        //         ? Text('Show small screen map')
-        //         : Text('Show full screen map'),
-        //   ),
-        // ),
-
-        ScaleLayerWidget(
-          options: ScaleLayerPluginOption(
-            lineColor: Colors.black,
-            lineWidth: 2,
-            textStyle: const TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-            padding: const EdgeInsets.all(10),
-          ),
-        ),
-
-        // Align(
-        //   alignment: Alignment.bottomRight,
-        //   child: Padding(
-        //     padding: const EdgeInsets.only(
-        //       bottom: 30,
-        //       right: 10,
-        //     ),
-        //     child: FloatingActionButton(
-        //       onPressed: () {
-        //         setState(() {
-        //           cameraCenter = LatLng(
-        //               _currentLocation!.latitude, _currentLocation!.longitude);
-        //         });
-        //       },
-        //       child: Icon(
-        //         Icons.my_location,
-        //       ),
-        //     ),
-        //   ),
-        // ),
-
-        FlutterMapControlButtons(
-          minZoom: 4,
-          maxZoom: 19,
-          mini: false,
-          padding: 10,
-          alignment: Alignment.bottomRight,
-          mapController: mapController,
-          // map: FlutterMapState.of(context),
-          // currentLocation: _currentLocation,
-        ),
-        CurrentLocationLayer(),
       ],
       children: [
         TileLayer(
@@ -426,11 +389,6 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
             ),
           ],
         ),
-        // CurrentLocationLayer(
-        //   style: const LocationMarkerStyle(
-        //     markerDirection: MarkerDirection.heading,
-        //   ),
-        // ),
       ],
     );
   }

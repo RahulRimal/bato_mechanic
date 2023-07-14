@@ -1,7 +1,9 @@
+import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 class FlutterMapControlButtons extends StatefulWidget {
   final double minZoom;
@@ -59,66 +61,63 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
     with TickerProviderStateMixin {
   final FitBoundsOptions options =
       const FitBoundsOptions(padding: EdgeInsets.all(12));
-  // MapController _mapController = MapController();
 
-  late AnimationController _animationController;
+  // late AnimationController _animationController;
 
-  void _animatedMapMove(LatLng destLocation, double destZoom) {
-    // Create some tweens. These serve to split up the transition from one location to another.
-    // In our case, we want to split the transition be<tween> our current map center and the destination.
-    final latTween = Tween<double>(
-        // begin: _mapController.center.latitude, end: destLocation.latitude);
-        begin: widget.mapController.center.latitude,
-        end: destLocation.latitude);
-    final lngTween = Tween<double>(
-        // begin: _mapController.center.longitude, end: destLocation.longitude);
-        begin: widget.mapController.center.longitude,
-        end: destLocation.longitude);
-    // final zoomTween = Tween<double>(begin: _mapController.zoom, end: destZoom);
-    final zoomTween =
-        Tween<double>(begin: widget.mapController.zoom, end: destZoom);
-    // Create a animation controller that has a duration and a TickerProvider.
-    if (mounted) {
-      _animationController = AnimationController(
-          vsync: this, duration: const Duration(milliseconds: 500));
-    }
-    // The animation determines what path the animation will take. You can try different Curves values, although I found
-    // fastOutSlowIn to be my favorite.
-    final Animation<double> animation = CurvedAnimation(
-        parent: _animationController, curve: Curves.fastOutSlowIn);
-
-    _animationController.addListener(() {
-      // _mapController.move(
-      widget.mapController.move(
-          LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
-          zoomTween.evaluate(animation));
-    });
-
-    if (mounted) {
-      _animationController.forward();
-    }
-  }
+  // void _animatedMapMove(LatLng destLocation, double destZoom) {
+  //   // Create some tweens. These serve to split up the transition from one location to another.
+  //   // In our case, we want to split the transition be<tween> our current map center and the destination.
+  //   final latTween = Tween<double>(
+  //       // begin: _mapController.center.latitude, end: destLocation.latitude);
+  //       begin: widget.mapController.center.latitude,
+  //       end: destLocation.latitude);
+  //   final lngTween = Tween<double>(
+  //       // begin: _mapController.center.longitude, end: destLocation.longitude);
+  //       begin: widget.mapController.center.longitude,
+  //       end: destLocation.longitude);
+  //   // final zoomTween = Tween<double>(begin: _mapController.zoom, end: destZoom);
+  //   final zoomTween =
+  //       Tween<double>(begin: widget.mapController.zoom, end: destZoom);
+  //   // Create a animation controller that has a duration and a TickerProvider.
+  //   if (mounted) {
+  //     _animationController = AnimationController(
+  //         vsync: this, duration: const Duration(milliseconds: 500));
+  //   }
+  //   // The animation determines what path the animation will take. You can try different Curves values, although I found
+  //   // fastOutSlowIn to be my favorite.
+  //   final Animation<double> animation = CurvedAnimation(
+  //       parent: _animationController, curve: Curves.fastOutSlowIn);
+  //   _animationController.addListener(() {
+  //     // _mapController.move(
+  //     widget.mapController.move(
+  //         LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
+  //         zoomTween.evaluate(animation));
+  //   });
+  //   if (mounted) {
+  //     _animationController.forward();
+  //   }
+  // }
 
   @override
   void initState() {
     super.initState();
-    // _mapController = MapController();
-    // _mapController = widget.mapController;
-    _animationController = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+
+    // _animationController = AnimationController(
+    //     duration: const Duration(milliseconds: 500), vsync: this);
   }
 
   @override
   void dispose() {
-    // _mapController.dispose();
-    _animationController.dispose();
+    // _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final map = FlutterMapState.of(context);
+    final map = FlutterMapState.of(context);
     // final map = widget.map;
+
+    MapProvider mapProvider = context.watch<MapProvider>();
 
     return Align(
       alignment: widget.alignment,
@@ -139,14 +138,16 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                   backgroundColor:
                       widget.zoomInColor ?? Theme.of(context).primaryColor,
                   onPressed: () {
-                    // final bounds = map.bounds;
-                    // final centerZoom = map.getBoundsCenterZoom(bounds, options);
-                    // var zoom = centerZoom.zoom + 1;
-                    // if (zoom > widget.maxZoom) {
-                    //   zoom = widget.maxZoom;
-                    // }
+                    final bounds = map.bounds;
+                    final centerZoom = map.getBoundsCenterZoom(bounds, options);
+                    var zoom = centerZoom.zoom + 1;
+                    if (zoom > widget.maxZoom) {
+                      zoom = widget.maxZoom;
+                    }
 
                     // _animatedMapMove(centerZoom.center, zoom);
+                    mapProvider.mswAnimatedMapMove(
+                        centerZoom.center, zoom, mounted, this);
                   },
                   child: Icon(widget.zoomInIcon,
                       color: widget.zoomInColorIcon ??
@@ -162,14 +163,16 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                   backgroundColor:
                       widget.zoomOutColor ?? Theme.of(context).primaryColor,
                   onPressed: () {
-                    // final bounds = map.bounds;
-                    // final centerZoom = map.getBoundsCenterZoom(bounds, options);
-                    // var zoom = centerZoom.zoom - 1;
-                    // if (zoom < widget.minZoom) {
-                    //   zoom = widget.minZoom;
-                    // }
+                    final bounds = map.bounds;
+                    final centerZoom = map.getBoundsCenterZoom(bounds, options);
+                    var zoom = centerZoom.zoom - 1;
+                    if (zoom < widget.minZoom) {
+                      zoom = widget.minZoom;
+                    }
 
                     // _animatedMapMove(centerZoom.center, zoom);
+                    mapProvider.mswAnimatedMapMove(
+                        centerZoom.center, zoom, mounted, this);
                   },
                   child: Icon(widget.zoomOutIcon,
                       color: widget.zoomOutColorIcon ??
@@ -188,9 +191,11 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                     Position userPosition =
                         await Geolocator.getCurrentPosition();
 
-                    _animatedMapMove(
+                    mapProvider.mswAnimatedMapMove(
                         LatLng(userPosition.latitude, userPosition.longitude),
-                        15.0);
+                        15.0,
+                        mounted,
+                        this);
                   },
                   child: Icon(widget.currentLocationIcon,
                       color: widget.currentLocationColorIcon ??

@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../../data/map_api.dart';
 import '../../models/system_models.dart';
+import '../request_mechanic_screen_view_model.dart';
 
 // mixin MapProvider on ChangeNotifier {
 class MapProvider with ChangeNotifier, BaseViewModel, MapSearchWidgetViewModel {
@@ -70,7 +71,24 @@ class MapProvider with ChangeNotifier, BaseViewModel, MapSearchWidgetViewModel {
   }
 
   getLocationName(double lat, double lon) async {
+    loading = true;
     var response = await MapApi.getLocationName(lat, lon);
+
+    if (response is Success) {
+      loading = false;
+      return response.response;
+    }
+
+    if (response is Failure) {
+      mapError = MapError(code: response.code, message: response.errorResponse);
+    }
+    loading = false;
+    return null;
+  }
+
+  getSearchLocations(String searchText) async {
+    loading = true;
+    var response = await MapApi.getSearchLocations(searchText);
 
     if (response is Success) {
       loading = false;

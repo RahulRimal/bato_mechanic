@@ -31,9 +31,9 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
     // animationController = AnimationController(
     //     duration: const Duration(milliseconds: 500), vsync: this);
     mapProvider = Provider.of<MapProvider>(context, listen: false);
-    mapProvider.bindMSWViewModel(context);
-    mapProvider.mswAnimationController = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    mapProvider.bindMSWViewModel(context, this);
+    // mapProvider.mswAnimationController = AnimationController(
+    //     duration: const Duration(milliseconds: 500), vsync: this);
 
     // Register this object as an observer
     WidgetsBinding.instance.addObserver(this);
@@ -65,14 +65,15 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
     MapProvider mapProvider = context.watch<MapProvider>();
 
     return SafeArea(
-      child: mapProvider.loading
-          ? const Center(child: CircularProgressIndicator())
-          : Stack(
-              children: [
-                _showMap(context),
-                _buildSearchBar(),
-              ],
-            ),
+      // child: mapProvider.loading
+      //     ? const Center(child: CircularProgressIndicator())
+      // :
+      child: Stack(
+        children: [
+          _showMap(context),
+          _buildSearchBar(),
+        ],
+      ),
     );
   }
 
@@ -101,35 +102,19 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
           //   );
           // },
           onTap: (tapPosition, latLng) async {
-            // setState(() {
             mapProvider.mswMarkerPosition = latLng;
-            // });
-            mapProvider.mswAnimatedMapMove(
-                latLng, mapProvider.mswMapController.zoom, mounted);
-            String placeName =
-                await MapApi.getLocationName(latLng.latitude, latLng.longitude);
+            // mapProvider.mswAnimatedMapMove(
+            //     latLng, mapProvider.mswMapController.zoom, mounted);
+            String placeName = await mapProvider.getLocationName(
+                latLng.latitude, latLng.longitude);
             mapProvider.mswSearchController.text = placeName;
+            mapProvider.mswAnimatedMapMove(
+                latLng, mapProvider.mswMapController.zoom, mounted, this);
           },
           center: mapProvider.mswMarkerPosition,
           zoom: 15.0,
         ),
         nonRotatedChildren: [
-          // const RichAttributionWidget(
-          //   popupInitialDisplayDuration: const Duration(seconds: 5),
-          //   animationConfig: const ScaleRAWA(),
-          //   showFlutterMapAttribution: false,
-          //   attributions: [
-          //     TextSourceAttribution(
-          //       'Full Screen Mode',
-          //       prependCopyright: false,
-          //     ),
-          //     const TextSourceAttribution(
-          //       'Tap on the map to show full screen map',
-          //       prependCopyright: false,
-          //     ),
-          //   ],
-          // ),
-
           FlutterMapControlButtons(
             minZoom: 4,
             maxZoom: 19,
@@ -140,6 +125,21 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
             // map: FlutterMapState.of(context),
           ),
           _buildSelectButton(),
+          const RichAttributionWidget(
+            popupInitialDisplayDuration: const Duration(seconds: 5),
+            animationConfig: const ScaleRAWA(),
+            showFlutterMapAttribution: false,
+            attributions: [
+              TextSourceAttribution(
+                'Full Screen Mode',
+                prependCopyright: false,
+              ),
+              const TextSourceAttribution(
+                'Tap on the map to show full screen map',
+                prependCopyright: false,
+              ),
+            ],
+          ),
         ],
         children: [
           TileLayer(
@@ -147,22 +147,27 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
             tileProvider: NetworkTileProvider(),
           ),
-          MarkerLayer(
-            rotate: true,
-            markers: [
-              Marker(
-                width: 80,
-                height: 80,
-                point: mapProvider.mswMarkerPosition,
-                builder: (ctx) => const Icon(
-                  Icons.location_on,
-                  color: Colors.orange,
-                  size: 40.0,
+          if (!mapProvider.loading)
+            MarkerLayer(
+              rotate: true,
+              markers: [
+                Marker(
+                  width: 80,
+                  height: 80,
+                  point: mapProvider.mswMarkerPosition,
+                  builder: (ctx) => const Icon(
+                    Icons.location_on,
+                    color: Colors.orange,
+                    size: 40.0,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           CurrentLocationLayer(),
+          if (mapProvider.loading)
+            Center(
+              child: CircularProgressIndicator(),
+            ),
         ],
       );
     });
@@ -201,14 +206,11 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
                   suffixIcon: IconButton(
                     onPressed: () {
                       mapProvider.mapProvider.mswSearchController.clear();
-                      // setState(() {
-                      mapProvider.mswOptions = [];
 
-                      // });
+                      mapProvider.mswOptions = [];
                     },
                     icon: Icon(
                       Icons.clear,
-                      // color: widget.searchBarTextColor,
                     ),
                   ),
                 ),
@@ -216,20 +218,21 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
                   if (mapProvider.mswDebounce?.isActive ?? false) {
                     mapProvider.mswDebounce?.cancel();
                   }
-                  // setState(() {});
+
                   mapProvider.mswDebounce =
                       Timer(const Duration(milliseconds: 20), () async {
-                    var decodedResponse = await MapApi.getSearchLocations(
-                        mapProvider.mapProvider.mswSearchController.text);
+                    // var decodedResponse = await MapApi.getSearchLocations(
+                    //     mapProvider.mapProvider.mswSearchController.text);
+                    var response = await mapProvider.getSearchLocations(
+                        mapProvider.mswSearchController.text);
 
-                    mapProvider.mswOptions = decodedResponse
+                    mapProvider.mswOptions = response
                         .map((e) => OSMdata(
                             displayname: e['display_name'],
                             latitude: double.parse(e['lat']),
                             longitude: double.parse(e['lon'])))
                         .toList()
                         .cast<OSMdata>();
-                    // setState(() {});
                   });
                 }),
             _buildListView(),
@@ -261,10 +264,11 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
     MapProvider mapProvider = context.watch<MapProvider>();
     return ListView.builder(
         shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: mapProvider.mswOptions.length > 5
-            ? 5
-            : mapProvider.mswOptions.length,
+        // physics: const NeverScrollableScrollPhysics(),
+        // itemCount: mapProvider.mswOptions.length > 5
+        //     ? 5
+        //     : mapProvider.mswOptions.length,
+        itemCount: mapProvider.mswOptions.length,
         itemBuilder: (context, index) {
           return Container(
             color: Colors.white,
@@ -285,12 +289,11 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
                     positionToMove.longitude;
 
                 // mapProvider.mswAnimatedMapMove(positionToMove, 18.0, mounted);
-                mapProvider.mswAnimatedMapMove(
-                    positionToMove, mapProvider.mswMapController.zoom, mounted);
+                mapProvider.mswAnimatedMapMove(positionToMove,
+                    mapProvider.mswMapController.zoom, mounted, this);
 
                 mapProvider.mswSearchFocusNode.unfocus();
                 mapProvider.mswOptions.clear();
-                // setState(() {});
               },
             ),
           );

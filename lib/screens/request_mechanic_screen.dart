@@ -1,15 +1,22 @@
 import 'dart:io';
+import 'package:bato_mechanic/models/mechanic.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
+import 'package:bato_mechanic/view_models/providers/map_provider.dart';
+import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
+import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
+import 'package:provider/provider.dart';
 
 import 'package:video_player/video_player.dart';
 
+import '../models/vehicle.dart';
 import '../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
+import '../view_models/providers/vehicle_provider.dart';
 import '../widgets/map_search_widget.dart';
 
 class RequestMechanicScreen extends StatefulWidget {
@@ -19,48 +26,41 @@ class RequestMechanicScreen extends StatefulWidget {
   _RequestMechanicScreenState createState() => _RequestMechanicScreenState();
 }
 
-class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
+class _RequestMechanicScreenState extends State<RequestMechanicScreen>
+    with WidgetsBindingObserver {
   // Position? _currentLocation;
   VideoPlayerController? _videoController;
   final List<File> _selectedImages = [];
   final ImagePicker _imagePicker = ImagePicker();
 
+  // late MechanicProvider _mechanicProvider;
+  late MechanicProvider _mechanicProvider;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Register this object as an observer
+  //   WidgetsBinding.instance.addObserver(this);
+  //   _mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     _mechanicProvider.fetchRecomendedMechanics(
+  //         '1', widget.selectedVehicle.id.toString());
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
-    // _initializeLocation();
+    _mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
+    _mechanicProvider.bindRMSViewModel(context);
   }
 
   @override
   void dispose() {
+    _mechanicProvider.unBindRMSViewModel();
     _videoController?.dispose();
     super.dispose();
   }
-
-  // Future<void> _initializeLocation() async {
-  //   bool serviceEnabled;
-  //   LocationPermission permission;
-  //   Position position;
-  //   serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  //   if (!serviceEnabled) {
-  //     serviceEnabled = await Geolocator.openLocationSettings();
-  //     if (!serviceEnabled) {
-  //       return;
-  //     }
-  //   }
-  //   permission = await Geolocator.checkPermission();
-  //   if (permission == LocationPermission.denied) {
-  //     permission = await Geolocator.requestPermission();
-  //     if (permission != LocationPermission.whileInUse &&
-  //         permission != LocationPermission.always) {
-  //       return;
-  //     }
-  //   }
-  //   position = await Geolocator.getCurrentPosition();
-  //   setState(() {
-  //     _currentLocation = position;
-  //   });
-  // }
 
   Future<void> _pickImage() async {
     final XFile? image =
@@ -84,6 +84,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
 
   @override
   Widget build(BuildContext context) {
+    MechanicProvider mechanicProvider = context.watch<MechanicProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Request Mechanic'),
@@ -272,15 +273,21 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const TrackMechanicScreen(
-                        mechanicName: 'Suman Kanu',
-                        estimatedTimeOfArrival: '10 minutes',
-                        mechanicLocation: 'Muglin Road'),
-                  ),
-                ),
+                // onPressed: () => Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const TrackMechanicScreen(
+                //         mechanicName: 'Suman Koirala',
+                //         estimatedTimeOfArrival: '10 minutes',
+                //         mechanicLocation: 'Muglin Road'),
+                //   ),
+                // ),
+                onPressed: () {
+                  print(mechanicProvider
+                      .vehicleCategoryProvider.selectedVehicleCategory);
+                  print(mechanicProvider.vehicleProvider.selectedVehicle);
+                  print('here');
+                },
                 child: const Text('Request for a mechanic'),
               ),
             ],

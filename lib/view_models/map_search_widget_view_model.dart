@@ -17,8 +17,10 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
   List<OSMdata> _options = <OSMdata>[];
   Timer? _debounce;
 
-  late double _width;
-  late double _height;
+  // late double _width;
+  // late double _height;
+  double _width = 10;
+  double _height = 10;
 
   // StreamSubscription<MapEvent>? mapEventSubscription;
 
@@ -69,10 +71,12 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
     _height = value;
   }
 
-  bindMSWViewModel(BuildContext context) {
+  bindMSWViewModel(BuildContext context, TickerProvider vsync) {
     bindBaseViewModal(context);
 
     mswMapController = MapController();
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: vsync);
 
     /// The above code is listening to the mapEventStream and when the mapEventMoveEnd event is
     /// triggered, it moves the pointer to that position
@@ -98,10 +102,11 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
   unBindMSWViewModel() {
     _mapController.dispose();
     _animationController.dispose();
-    unBindMSWViewModel();
+    unBindBaseViewModal();
   }
 
-  void mswAnimatedMapMove(LatLng destLocation, double destZoom, bool mounted) {
+  void mswAnimatedMapMove(LatLng destLocation, double destZoom, bool mounted,
+      TickerProvider vsync) {
     // Create some tweens. These serve to split up the transition from one location to another.
     // In our case, we want to split the transition be<tween> our current map center and the destination.
     final latTween = Tween<double>(
@@ -111,10 +116,10 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
     final zoomTween =
         Tween<double>(begin: mswMapController.zoom, end: destZoom);
     // Create a animation controller that has a duration and a TickerProvider.
-    // if (mounted) {
-    //   animationController = AnimationController(
-    //       vsync: this, duration: const Duration(milliseconds: 500));
-    // }
+    if (mounted) {
+      _animationController = AnimationController(
+          vsync: vsync, duration: const Duration(milliseconds: 500));
+    }
     // The animation determines what path the animation will take. You can try different Curves values, although I found
     // fastOutSlowIn to be my favorite.
     final Animation<double> animation = CurvedAnimation(
