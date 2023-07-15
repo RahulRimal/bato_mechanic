@@ -103,11 +103,11 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
           // },
           onTap: (tapPosition, latLng) async {
             mapProvider.mswMarkerPosition = latLng;
-            // mapProvider.mswAnimatedMapMove(
-            //     latLng, mapProvider.mswMapController.zoom, mounted);
+
             String placeName = await mapProvider.getLocationName(
                 latLng.latitude, latLng.longitude);
-            mapProvider.mswSearchController.text = placeName;
+            // mapProvider.mswSearchController.text = placeName;
+            mapProvider.mswSelectedPlaceName = placeName;
             mapProvider.mswAnimatedMapMove(
                 latLng, mapProvider.mswMapController.zoom, mounted, this);
           },

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import '../utils/system_helper.dart';
+
 VehiclePart vehiclePartFromJson(String str) =>
     VehiclePart.fromJson(json.decode(str));
 
@@ -29,14 +31,14 @@ class VehiclePart {
 
   factory VehiclePart.fromJson(Map<String, dynamic> json) => VehiclePart(
         id: json["id"],
-        name: json["name"],
+        name: json["name"].toString().toCapitalize(),
         vehicleId: json["vehicle"],
         image: json["image"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "name": name,
+        "name": name.toLowerCase(),
         "vehicle": vehicleId,
         "image": image,
       };

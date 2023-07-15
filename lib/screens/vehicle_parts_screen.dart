@@ -100,6 +100,8 @@ class _VehiclePartsScreenState extends State<VehiclePartsScreen>
                         .toString());
                 return GestureDetector(
                   onTap: () {
+                    _vehiclePartProvider.selectedVehiclePart =
+                        vehicleParts[index];
                     Navigator.push(
                       context,
                       MaterialPageRoute(

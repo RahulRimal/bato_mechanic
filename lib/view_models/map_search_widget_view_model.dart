@@ -10,6 +10,7 @@ import 'package:latlong2/latlong.dart';
 // class MapSearchWidgetViewModel with ChangeNotifier, BaseViewModel {
 mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
   LatLng _markerPosition = LatLng(27.703292452047425, 85.33033043146135);
+  String? _selectedPlaceName;
   MapController _mapController = MapController();
   late AnimationController _animationController;
   TextEditingController _searchController = TextEditingController();
@@ -71,6 +72,13 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
     _height = value;
   }
 
+  String? get mswSelectedPlaceName => _selectedPlaceName;
+  set mswSelectedPlaceName(String? value) {
+    _selectedPlaceName = value;
+    if (value != null) _searchController.text = value;
+    notifyListeners();
+  }
+
   bindMSWViewModel(BuildContext context, TickerProvider vsync) {
     bindBaseViewModal(context);
 
@@ -91,7 +99,9 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
         String? placeName = await mapProvider.getLocationName(
             event.center.latitude, event.center.longitude);
         if (placeName != null) {
-          _searchController.text = placeName;
+          // _searchController.text = placeName;
+          mswSelectedPlaceName = placeName;
+          // notifyListeners();
         } else {
           print('here');
         }

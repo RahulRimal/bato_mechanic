@@ -14,6 +14,8 @@ class VehiclePartProvider
   bool _loading = false;
   VehiclePartError? _vehiclePartError;
 
+  VehiclePart? _selectedVehiclePart;
+
   List<VehiclePart> get parts => _parts;
   set parts(List<VehiclePart> parts) {
     // loading = true;
@@ -30,6 +32,12 @@ class VehiclePartProvider
   VehiclePartError? get vehiclePartError => _vehiclePartError;
   set vehiclePartError(VehiclePartError? vehiclePartError) {
     _vehiclePartError = vehiclePartError;
+  }
+
+  VehiclePart? get selectedVehiclePart => _selectedVehiclePart;
+  set selectedVehiclePart(VehiclePart? selectedVehiclePart) {
+    _selectedVehiclePart = selectedVehiclePart;
+    notifyListeners();
   }
 
   List<VehiclePart> getVehicleParts(String vehicleId) {

@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:bato_mechanic/models/mechanic.dart';
+import 'package:bato_mechanic/models/vehicle_repair_request.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
+import 'package:bato_mechanic/utils/toast_helper.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
+import 'package:bato_mechanic/view_models/providers/vehicle_repair_request_provider.dart';
 import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -28,12 +32,6 @@ class RequestMechanicScreen extends StatefulWidget {
 
 class _RequestMechanicScreenState extends State<RequestMechanicScreen>
     with WidgetsBindingObserver {
-  // Position? _currentLocation;
-  VideoPlayerController? _videoController;
-  final List<File> _selectedImages = [];
-  final ImagePicker _imagePicker = ImagePicker();
-
-  // late MechanicProvider _mechanicProvider;
   late MechanicProvider _mechanicProvider;
 
   // @override
@@ -52,39 +50,20 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
   void initState() {
     super.initState();
     _mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
-    _mechanicProvider.bindRMSViewModel(context);
+    _mechanicProvider.bindRMSViewModel(context, this);
   }
 
   @override
   void dispose() {
-    _mechanicProvider.unBindRMSViewModel();
-    _videoController?.dispose();
+    _mechanicProvider.unBindRMSViewModel(this);
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? image =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _selectedImages.add(File(image.path));
-      });
-    }
-  }
-
-  Future<void> _pickVideo() async {
-    final XFile? video =
-        await _imagePicker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      _videoController = VideoPlayerController.file(File(video.path));
-      await _videoController!.initialize();
-      setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     MechanicProvider mechanicProvider = context.watch<MechanicProvider>();
+    // VehicleRepairRequestProvider vehicleRepairRequestProvider =
+    // context.watch<VehicleRepairRequestProvider>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Request Mechanic'),
@@ -144,6 +123,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
               ),
               const SizedBox(height: 8),
               TextFormField(
+                controller: mechanicProvider.rmsIssueDescriptionController,
                 decoration: const InputDecoration(
                   hintText: 'Describe the issue',
                   border: OutlineInputBorder(),
@@ -162,15 +142,18 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: _pickImage,
-                    child: const Text('Add Photo'),
+                    // onPressed: _pickImage,
+                    onPressed: mechanicProvider.rmsPickImages,
+                    child: const Text('Add Photos'),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: _selectedImages.map((File image) {
+                        // children: _selectedImages.map((File image) {
+                        children: mechanicProvider.rmsSelectedImages
+                            .map((File image) {
                           return Container(
                             margin: const EdgeInsets.only(right: 8.0),
                             width: 80,
@@ -193,13 +176,14 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
               ),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: _pickVideo,
+                onPressed: mechanicProvider.rmsPickVideo,
                 child: const Text('Add Video'),
               ),
-              if (_videoController != null)
+              if (mechanicProvider.rmsVideoController != null)
                 AspectRatio(
-                  aspectRatio: _videoController!.value.aspectRatio,
-                  child: VideoPlayer(_videoController!),
+                  aspectRatio:
+                      mechanicProvider.rmsVideoController!.value.aspectRatio,
+                  child: VideoPlayer(mechanicProvider.rmsVideoController!),
                 ),
               const SizedBox(height: 16),
               const Text(
@@ -209,68 +193,99 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(
-                height: 130,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.amberAccent[200],
-                          borderRadius: BorderRadius.circular(
-                            20,
-                          ),
-                        ),
-                        child: SizedBox(
-                          width: 130,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: Image.asset(
-                                  'assets/images/no-profile.png',
-                                ),
+              if (mechanicProvider.loading)
+                const Center(
+                  child: CircularProgressIndicator(),
+                )
+              else
+                SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      // itemCount: 5,
+                      itemCount:
+                          mechanicProvider.rmsRecommendedMechanics.length,
+                      itemBuilder: (context, index) => GestureDetector(
+                            onTap: () => mechanicProvider.rmsPreferedMechanic =
+                                mechanicProvider.rmsRecommendedMechanics[index],
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.amberAccent[200],
+                                border: mechanicProvider.rmsPreferedMechanic ==
+                                        mechanicProvider
+                                            .rmsRecommendedMechanics[index]
+                                    ? Border.all(
+                                        color: Colors.blue,
+                                        width: 2,
+                                      )
+                                    : null,
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              const SizedBox(height: 8),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(20),
-                                    bottomRight: Radius.circular(20),
-                                  ),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                              child: SizedBox(
+                                width: 130,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    Text(
-                                      '4.5',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                    Expanded(
+                                      // child: Image.asset(
+                                      //   'assets/images/no-profile.png',
+                                      // ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          top: 4,
+                                        ),
+                                        child: Image.network(
+                                          mechanicProvider
+                                              .rmsRecommendedMechanics[index]
+                                              .image,
+                                        ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Icon(
-                                      Icons.star,
-                                      size: 18,
-                                      color: Colors.white,
+                                    // const SizedBox(height: 8),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(20),
+                                          bottomRight: Radius.circular(20),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            // '4.5',
+                                            mechanicProvider
+                                                .rmsRecommendedMechanics[index]
+                                                .averageRating
+                                                .toString(),
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-              ),
+                            ),
+                          )),
+                ),
               const SizedBox(height: 16),
               ElevatedButton(
                 // onPressed: () => Navigator.push(
@@ -283,11 +298,9 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
                 //   ),
                 // ),
                 onPressed: () {
-                  print(mechanicProvider
-                      .vehicleCategoryProvider.selectedVehicleCategory);
-                  print(mechanicProvider.vehicleProvider.selectedVehicle);
-                  print('here');
+                  mechanicProvider.rmsRequestForVehicleRepair(context);
                 },
+
                 child: const Text('Request for a mechanic'),
               ),
             ],

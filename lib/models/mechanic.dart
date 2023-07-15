@@ -25,6 +25,7 @@ class Mechanic {
   String image;
   String vehicleSpeciality;
   String vehiclePartSpeciality;
+  double averageRating;
 
   Mechanic({
     required this.id,
@@ -38,6 +39,7 @@ class Mechanic {
     required this.image,
     required this.vehicleSpeciality,
     required this.vehiclePartSpeciality,
+    required this.averageRating,
   });
 
   factory Mechanic.fromJson(Map<String, dynamic> json) => Mechanic(
@@ -52,6 +54,7 @@ class Mechanic {
         image: json["image"],
         vehicleSpeciality: json["vehicle_speciality"],
         vehiclePartSpeciality: json["vehicle_part_speciality"],
+        averageRating: double.parse(json["average_rating"].toString()),
       );
 
   Map<String, dynamic> toJson() => {
@@ -66,6 +69,7 @@ class Mechanic {
         "image": image,
         "vehicle_speciality": vehicleSpeciality,
         "vehicle_part_speciality": vehiclePartSpeciality,
+        "average_rating": averageRating,
       };
 }
 

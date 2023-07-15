@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bato_mechanic/models/mechanic.dart';
 import 'package:bato_mechanic/models/vehicle.dart';
 
 import '../models/system_models.dart';
@@ -23,7 +24,7 @@ class MechanicApi {
       if (response.statusCode == 200) {
         return Success(
             code: response.statusCode,
-            response: vehiclesFromJson(response.body));
+            response: mechanicsFromJson(response.body));
       }
       return Failure(
         code: ApiStatusCode.invalidResponse,
