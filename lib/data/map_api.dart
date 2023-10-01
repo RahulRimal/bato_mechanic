@@ -20,6 +20,8 @@ class MapApi {
         // },
       );
 
+      print(response);
+
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         var listOfCoordinatePoints =

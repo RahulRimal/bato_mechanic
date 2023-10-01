@@ -333,21 +333,21 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
           mapController: mapSearchWidgetViewModel.mapController,
         ),
         CurrentLocationLayer(),
-        const RichAttributionWidget(
-          popupInitialDisplayDuration: Duration(seconds: 5),
-          animationConfig: ScaleRAWA(),
-          showFlutterMapAttribution: false,
-          attributions: [
-            TextSourceAttribution(
-              'Full Screen Mode',
-              prependCopyright: false,
-            ),
-            TextSourceAttribution(
-              'Tap on the map to show full screen map',
-              prependCopyright: false,
-            ),
-          ],
-        ),
+        // const RichAttributionWidget(
+        //   popupInitialDisplayDuration: Duration(seconds: 5),
+        //   animationConfig: ScaleRAWA(),
+        //   showFlutterMapAttribution: false,
+        //   attributions: [
+        //     TextSourceAttribution(
+        //       'Full Screen Mode',
+        //       prependCopyright: false,
+        //     ),
+        //     TextSourceAttribution(
+        //       'Tap on the map to show full screen map',
+        //       prependCopyright: false,
+        //     ),
+        //   ],
+        // ),
       ],
       children: [
         TileLayer(
