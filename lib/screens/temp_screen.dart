@@ -4,12 +4,14 @@ import 'package:latlong2/latlong.dart';
 import 'dart:math' show atan2;
 
 class TempScreen extends StatefulWidget {
+  const TempScreen({super.key});
+
   @override
-  _TempScreenState createState() => _TempScreenState();
+  State<TempScreen> createState() => _TempScreenState();
 }
 
 class _TempScreenState extends State<TempScreen> {
-  MapController _mapController = MapController();
+  final MapController _mapController = MapController();
   double _rotationDegrees = 0.0; // Angle in degrees for rotation
   LatLng _previousPosition = LatLng(27.703292452047425, 85.33033043146135);
 
@@ -47,7 +49,7 @@ class _TempScreenState extends State<TempScreen> {
                 return Transform.rotate(
                   angle: _rotationDegrees *
                       (3.1415927 / 180), // Convert degrees to radians
-                  child: Icon(
+                  child: const Icon(
                     Icons.arrow_forward,
                     color: Colors.blue,
                     size: 50.0,

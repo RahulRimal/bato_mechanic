@@ -11,7 +11,7 @@ class SystemProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  showLoadingWithMessageOptional(BuildContext context, {message = null}) {
+  showLoadingWithMessageOptional(BuildContext context, {message}) {
     // If loading is enabled then do not instantiate new loading but just change the loading message
     loadingMessage = message;
     if (!_loadingEnabled) {

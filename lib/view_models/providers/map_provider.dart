@@ -1,13 +1,8 @@
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
-import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../data/map_api.dart';
 import '../../models/system_models.dart';
-import '../request_mechanic_screen_view_model.dart';
 
 // mixin MapProvider on ChangeNotifier {
 abstract class MapProvider extends ChangeNotifier {

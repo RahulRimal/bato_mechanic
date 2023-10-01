@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.amberAccent[200],
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(color: Colors.white),
         ));
   }

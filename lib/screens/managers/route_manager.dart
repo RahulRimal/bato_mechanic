@@ -1,4 +1,3 @@
-import 'package:bato_mechanic/models/vehicle_category.dart';
 import 'package:bato_mechanic/screens/authentication_screen.dart';
 import 'package:bato_mechanic/screens/feedback_and_contact_screen.dart';
 import 'package:bato_mechanic/screens/payment_integration_screen.dart';
@@ -8,11 +7,9 @@ import 'package:bato_mechanic/screens/service_history_screen.dart';
 import 'package:bato_mechanic/screens/splash_screen.dart';
 import 'package:bato_mechanic/screens/support_chat_screen.dart';
 import 'package:bato_mechanic/screens/temp_screen.dart';
-import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_category_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_parts_screen.dart';
 import 'package:bato_mechanic/screens/vehicles_screen.dart';
-import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
 class RoutesManager {
@@ -38,11 +35,11 @@ class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
       case RoutesManager.splashScreenRoute:
-        return MaterialPageRoute(builder: (_) => SplashScreen());
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
       case RoutesManager.authScreenRoute:
-        return MaterialPageRoute(builder: (_) => AuthenticationScreen());
+        return MaterialPageRoute(builder: (_) => const AuthenticationScreen());
       case RoutesManager.feedbackScreen:
-        return MaterialPageRoute(builder: (_) => FeedbackContactScreen());
+        return MaterialPageRoute(builder: (_) => const FeedbackContactScreen());
       // case RoutesManager.mechanicsProfileScreen:
       //   return MaterialPageRoute(
       //     builder: (_) => const MechanicP
@@ -51,25 +48,26 @@ class RouteGenerator {
         return MaterialPageRoute(
             builder: (_) => const PaymentIntegrationScreen());
       case RoutesManager.ratingScreen:
-        return MaterialPageRoute(builder: (_) => RatingsAndReviewsScreen());
+        return MaterialPageRoute(
+            builder: (_) => const RatingsAndReviewsScreen());
       case RoutesManager.requestMechanicScreen:
-        return MaterialPageRoute(builder: (_) => RequestMechanicScreen());
+        return MaterialPageRoute(builder: (_) => const RequestMechanicScreen());
       case RoutesManager.serviceHistoryScreen:
         return MaterialPageRoute(builder: (_) => ServiceHistoryScreen());
       case RoutesManager.supportChatScreen:
-        return MaterialPageRoute(builder: (_) => SupportChatScreen());
+        return MaterialPageRoute(builder: (_) => const SupportChatScreen());
       case RoutesManager.tempScreen:
-        return MaterialPageRoute(builder: (_) => TempScreen());
+        return MaterialPageRoute(builder: (_) => const TempScreen());
       // case RoutesManager.trackMechanicScreen:
       //   return MaterialPageRoute(builder: (_) => TrackMechanicScreen());
       case RoutesManager.vehicleCategoriesScreen:
-        return MaterialPageRoute(builder: (_) => VehicleCategoryScreen());
+        return MaterialPageRoute(builder: (_) => const VehicleCategoryScreen());
       // case RoutesManager.vehicleDetailsScreen:
       //   return MaterialPageRoute(builder: (_) => VehiclesScreen());
       case RoutesManager.vehiclePartsScreen:
-        return MaterialPageRoute(builder: (_) => VehiclePartsScreen());
+        return MaterialPageRoute(builder: (_) => const VehiclePartsScreen());
       case RoutesManager.vehiclesScreen:
-        return MaterialPageRoute(builder: (_) => VehiclesScreen());
+        return MaterialPageRoute(builder: (_) => const VehiclesScreen());
       default:
         return unDefinedRoute();
     }

@@ -1,5 +1,4 @@
 import 'package:bato_mechanic/utils/system_helper.dart';
-import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
 import 'package:bato_mechanic/view_models/providers/system_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +26,7 @@ class ToastHelper {
             //   vertical: 15,
             // ),
             contentPadding: EdgeInsets.zero,
-            content: Container(
+            content: SizedBox(
               // width: 10,
               height: 150,
               child: Column(
@@ -44,7 +43,7 @@ class ToastHelper {
                           .loadingMessage
                           .toString(),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         // color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -66,7 +65,7 @@ class ToastHelper {
       content: Text(
         message.capitalize(),
         textAlign: TextAlign.center,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: Colors.white,

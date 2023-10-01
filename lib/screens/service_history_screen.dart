@@ -6,7 +6,7 @@ class ServiceHistoryScreen extends StatelessWidget {
   ServiceHistoryScreen({Key? key}) : super(key: key);
 
   // final List<ServiceRecord> serviceRecords;
-  List<ServiceRecord> serviceRecords = [
+  final List<ServiceRecord> serviceRecords = [
     ServiceRecord(
       date: 'June 1, 2023',
       invoiceNumber: 'INV123456',

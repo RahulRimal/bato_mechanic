@@ -1,32 +1,17 @@
-import 'dart:async';
 import 'dart:io';
-import 'package:bato_mechanic/models/mechanic.dart';
-import 'package:bato_mechanic/models/vehicle_repair_request.dart';
-import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
-import 'package:bato_mechanic/utils/toast_helper.dart';
-import 'package:bato_mechanic/view_models/providers/map_provider.dart';
-import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_repair_request_provider.dart';
 import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:location_picker_flutter_map/location_picker_flutter_map.dart';
 import 'package:provider/provider.dart';
 
 import 'package:video_player/video_player.dart';
 
-import '../models/vehicle.dart';
-import '../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
-import '../view_models/providers/vehicle_provider.dart';
 import '../widgets/map_search_widget.dart';
 
 class RequestMechanicScreen extends StatefulWidget {
   const RequestMechanicScreen({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _RequestMechanicScreenState createState() => _RequestMechanicScreenState();
 }
 
@@ -92,7 +77,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
               height: 400,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: MapSearchWidget(),
+                child: const MapSearchWidget(),
               ),
             ),
             const SizedBox(height: 16),
@@ -268,7 +253,7 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
                                   ),
                                   // const SizedBox(height: 8),
                                   Container(
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Colors.black,
                                       borderRadius: BorderRadius.only(
                                         bottomLeft: Radius.circular(20),
@@ -285,16 +270,16 @@ class _RequestMechanicScreenState extends State<RequestMechanicScreen>
                                               .recommendedMechanics[index]
                                               .averageRating
                                               .toString(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 4,
                                         ),
-                                        Icon(
+                                        const Icon(
                                           Icons.star,
                                           size: 18,
                                           color: Colors.white,

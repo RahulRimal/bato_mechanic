@@ -71,7 +71,7 @@ class MechanicProfileScreen extends StatelessWidget {
                       Row(
                         children: List.generate(
                               rating.floor(),
-                              (index) => Icon(
+                              (index) => const Icon(
                                 Icons.star,
                                 color: Colors.amber,
                                 size: 20,
@@ -79,7 +79,7 @@ class MechanicProfileScreen extends StatelessWidget {
                             ) +
                             (rating % 1 > 0
                                 ? [
-                                    Icon(
+                                    const Icon(
                                       Icons.star_half,
                                       color: Colors.amber,
                                       size: 20,

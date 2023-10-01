@@ -1,12 +1,8 @@
 import 'package:bato_mechanic/screens/managers/values_manager.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_provider.dart';
 import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/vehicle.dart';
-import '../models/vehicle_category.dart';
 import 'vehicle_parts_screen.dart';
 
 class VehiclesScreen extends StatefulWidget {

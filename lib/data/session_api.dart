@@ -12,11 +12,11 @@ import '../screens/managers/values_manager.dart';
 class SessionApi {
   static Future<Object> getPreviousSession(String accessToken) async {
     try {
-      var url = Uri.parse(RemoteManager.BASE_URI + '/sessions');
+      var url = Uri.parse('${RemoteManager.BASE_URI}/sessions');
 
       var response = await http.get(
         url,
-        headers: {HttpHeaders.authorizationHeader: "SL " + accessToken},
+        headers: {HttpHeaders.authorizationHeader: "SL $accessToken"},
       );
       if (response.statusCode == ApiStatusCode.responseSuccess) {
         return Success(
@@ -55,7 +55,7 @@ class SessionApi {
         "password": password
       };
       // var url = Uri.parse('http://localhost/apiforsharelearn/sessions');
-      var url = Uri.parse(RemoteManager.BASE_URI + '/auth/jwt/create');
+      var url = Uri.parse('${RemoteManager.BASE_URI}/auth/jwt/create');
 
       var response = await http.post(
         url,
@@ -106,7 +106,7 @@ class SessionApi {
     try {
       Map<String, String> postBody = {"refresh": refreshToken};
 
-      var url = Uri.parse(RemoteManager.BASE_URI + '/auth/jwt/refresh');
+      var url = Uri.parse('${RemoteManager.BASE_URI}/auth/jwt/refresh');
 
       var response = await http.post(
         url,
@@ -156,7 +156,7 @@ class SessionApi {
 
   static Future<Object> deleteSession(String sessionId) async {
     try {
-      var url = Uri.parse(RemoteManager.BASE_URI + '/sessions/' + sessionId);
+      var url = Uri.parse('${RemoteManager.BASE_URI}/sessions/$sessionId');
 
       var response = await http.delete(
         url,
@@ -205,12 +205,12 @@ class FCMDeviceApi {
       Session authSession, Map<String, dynamic> deviceInfo) async {
     try {
       // var url = Uri.parse('http://localhost/apiforsharelearn/sessions');
-      var url = Uri.parse(RemoteManager.BASE_URI + '/devices/');
+      var url = Uri.parse('${RemoteManager.BASE_URI}/devices/');
 
       var response = await http.post(
         url,
         headers: {
-          HttpHeaders.authorizationHeader: "SL " + authSession.accessToken,
+          HttpHeaders.authorizationHeader: "SL ${authSession.accessToken}",
           "Accept": "application/json; charset=utf-8",
 
           "Access-Control-Allow-Origin":

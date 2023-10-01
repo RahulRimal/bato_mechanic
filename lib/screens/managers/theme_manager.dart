@@ -32,7 +32,7 @@ class ThemeManager {
       disabledColor: ColorManager.primaryTint70,
       labelStyle: TextStyle(color: ColorManager.primaryShade100),
       brightness: Brightness.dark,
-      shape: StadiumBorder(),
+      shape: const StadiumBorder(),
     ),
     listTileTheme: ListTileThemeData(
       iconColor: ColorManager.primaryShade100,
@@ -50,7 +50,7 @@ class ThemeManager {
       ),
     ),
     buttonTheme: ButtonThemeData(
-      shape: StadiumBorder(),
+      shape: const StadiumBorder(),
       disabledColor: ColorManager.primaryTint70,
       buttonColor: ColorManager.primary,
       splashColor: ColorManager.primaryTint20,
@@ -136,7 +136,7 @@ class ThemeManager {
           color: ColorManager.primaryTint70,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -145,7 +145,7 @@ class ThemeManager {
           color: ColorManager.primary,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -154,7 +154,7 @@ class ThemeManager {
           color: ColorManager.error,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -163,7 +163,7 @@ class ThemeManager {
           color: ColorManager.primary,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -224,7 +224,7 @@ class ThemeManager {
       disabledColor: ColorManager.primaryTint70,
       labelStyle: TextStyle(color: ColorManager.primaryShade100),
       brightness: Brightness.dark,
-      shape: StadiumBorder(),
+      shape: const StadiumBorder(),
     ),
     listTileTheme: ListTileThemeData(
       iconColor: ColorManager.primaryShade100,
@@ -242,7 +242,7 @@ class ThemeManager {
       ),
     ),
     buttonTheme: ButtonThemeData(
-      shape: StadiumBorder(),
+      shape: const StadiumBorder(),
       disabledColor: ColorManager.primaryTint70,
       buttonColor: ColorManager.primary,
       splashColor: ColorManager.primaryTint20,
@@ -328,7 +328,7 @@ class ThemeManager {
           color: ColorManager.primaryShade60,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -337,7 +337,7 @@ class ThemeManager {
           color: ColorManager.primary,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -346,7 +346,7 @@ class ThemeManager {
           color: ColorManager.error,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),
@@ -355,7 +355,7 @@ class ThemeManager {
           color: ColorManager.primary,
           width: AppSize.s1_5,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(AppSize.s8),
         ),
       ),

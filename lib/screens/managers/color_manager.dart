@@ -61,20 +61,20 @@ class ColorManager {
 
   // Opacity Colors
   static Color primaryOpacity70 = HexColor.fromHex("#B3ED9728");
-  static Color primaryColorWithOpacity = Color.fromARGB(204, 229, 99, 99);
-  static Color blackWithOpacity = Color.fromARGB(204, 0, 0, 0);
-  static Color transparent = Color.fromARGB(0, 0, 0, 0);
-  static Color blackWithLowOpacity = Color.fromARGB(100, 0, 0, 0);
-  static Color whiteWithOpacity = Color.fromARGB(204, 255, 255, 255);
-  static Color greyWithOpacity = Color.fromARGB(204, 70, 70, 70);
-  static Color grey2WithOpacity = Color.fromARGB(204, 79, 79, 79);
+  static Color primaryColorWithOpacity = const Color.fromARGB(204, 229, 99, 99);
+  static Color blackWithOpacity = const Color.fromARGB(204, 0, 0, 0);
+  static Color transparent = const Color.fromARGB(0, 0, 0, 0);
+  static Color blackWithLowOpacity = const Color.fromARGB(100, 0, 0, 0);
+  static Color whiteWithOpacity = const Color.fromARGB(204, 255, 255, 255);
+  static Color greyWithOpacity = const Color.fromARGB(204, 70, 70, 70);
+  static Color grey2WithOpacity = const Color.fromARGB(204, 79, 79, 79);
 }
 
 extension HexColor on Color {
   static Color fromHex(String hexColorString) {
     hexColorString = hexColorString.replaceAll('#', '');
     if (hexColorString.length == 6) {
-      hexColorString = "FF" + hexColorString; // 8 char with opacity 100%
+      hexColorString = "FF$hexColorString"; // 8 char with opacity 100%
     }
     return Color(int.parse(hexColorString, radix: 16));
   }

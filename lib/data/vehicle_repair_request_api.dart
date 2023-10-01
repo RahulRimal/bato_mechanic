@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bato_mechanic/models/mechanic.dart';
-import 'package:bato_mechanic/models/vehicle.dart';
 import 'package:bato_mechanic/models/vehicle_repair_request.dart';
 
 import '../models/system_models.dart';
@@ -126,8 +124,6 @@ class VehicleRepairRequestApi {
       var responseData = await response.stream.toBytes();
 
       var responseBody = String.fromCharCodes(responseData);
-
-      // print(responseBody);
 
       if (response.statusCode == ApiStatusCode.responseCreated) {
         return await getVechicleRepairRequest(repairRequestId);

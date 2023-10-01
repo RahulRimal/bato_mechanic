@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:bato_mechanic/models/mechanic.dart';
-import 'package:bato_mechanic/models/vehicle.dart';
 
 import '../models/system_models.dart';
 import '../screens/managers/api_values_manager.dart';

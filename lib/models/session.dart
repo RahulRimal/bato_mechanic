@@ -16,12 +16,12 @@ class Session {
   String refreshToken;
 
   String get sessionAccessToken {
-    return this.accessToken;
+    return accessToken;
   }
 
   factory Session.fromJson(Map<String, dynamic> json) => Session(
-        accessToken: json["access"] == null ? null : json["access"],
-        refreshToken: json["refresh"] == null ? null : json["refresh"],
+        accessToken: json["access"],
+        refreshToken: json["refresh"],
       );
 
   Map<String, dynamic> toJson() => {

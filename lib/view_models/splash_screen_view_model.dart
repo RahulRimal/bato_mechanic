@@ -1,4 +1,3 @@
-import 'package:bato_mechanic/models/session.dart';
 import 'package:bato_mechanic/screens/managers/route_manager.dart';
 import 'package:bato_mechanic/view_models/base_view_model.dart';
 import 'package:bato_mechanic/view_models/providers/session_provider.dart';

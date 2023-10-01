@@ -8,7 +8,7 @@ class SupportChatScreen extends StatefulWidget {
   const SupportChatScreen({super.key});
 
   @override
-  _SupportChatScreenState createState() => _SupportChatScreenState();
+  State<SupportChatScreen> createState() => _SupportChatScreenState();
 }
 
 class _SupportChatScreenState extends State<SupportChatScreen> {
@@ -43,7 +43,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
 
   Future<void> _selectImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: source);
+    final pickedImage = await picker.pickImage(source: source);
     if (pickedImage != null) {
       setState(() {
         _selectedImage = File(pickedImage.path);
@@ -53,7 +53,7 @@ class _SupportChatScreenState extends State<SupportChatScreen> {
 
   Future<void> _selectVideo(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedVideo = await picker.getVideo(source: source);
+    final pickedVideo = await picker.pickVideo(source: source);
     if (pickedVideo != null) {
       setState(() {
         _selectedVideo = File(pickedVideo.path);

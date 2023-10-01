@@ -1,13 +1,7 @@
-import 'package:bato_mechanic/models/vehicle_category.dart';
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_part_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_provider.dart';
 import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/vehicle_part.dart';
 
 // mixin VehiclesScreenViewModel on ChangeNotifier, BaseViewModel {
 //   bindVSViewModel(BuildContext context, WidgetsBindingObserver observer) {

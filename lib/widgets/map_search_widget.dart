@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:bato_mechanic/data/map_api.dart';
 import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
-import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:provider/provider.dart';
@@ -146,7 +142,7 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
             ),
           CurrentLocationLayer(),
           if (mapSearchWidgetViewModel.loading)
-            Center(
+            const Center(
               child: CircularProgressIndicator(),
             ),
         ],
@@ -191,7 +187,7 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
 
                       mapSearchWidgetViewModel.options = [];
                     },
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.clear,
                     ),
                   ),
@@ -237,7 +233,7 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
         ),
         child: ElevatedButton(
           onPressed: () {},
-          child: Text('Select this location'),
+          child: const Text('Select this location'),
         ),
       ),
     );
@@ -257,7 +253,7 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
           return Container(
             color: Colors.white,
             child: ListTile(
-              leading: Icon(Icons.location_on),
+              leading: const Icon(Icons.location_on),
               title: Text(
                 mapSearchWidgetViewModel.options[index].displayname,
               ),

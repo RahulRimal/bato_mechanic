@@ -35,8 +35,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
       appBar: AppBar(
         title: const Text('Authentication'),
       ),
-      body: SingleChildScrollView(
-        child: const Padding(
+      body: const SingleChildScrollView(
+        child: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,7 +72,7 @@ class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
 
   @override
-  _LoginFormState createState() => _LoginFormState();
+  State<LoginForm> createState() => _LoginFormState();
 }
 
 class _LoginFormState extends State<LoginForm> {
@@ -99,16 +99,16 @@ class _LoginFormState extends State<LoginForm> {
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: Colors.amberAccent[200],
-            title: Text('Confirm Exit'),
-            content: Text('Do you want to exit the app?'),
+            title: const Text('Confirm Exit'),
+            content: const Text('Do you want to exit the app?'),
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
+                child: const Text('No'),
               ),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
+                child: const Text('Yes'),
               ),
             ],
           ),
@@ -185,7 +185,9 @@ class _RegisterFormState extends State<RegisterForm> {
     if (_formKey.currentState!.validate()) {
       // Register user with email/password
       // Implement your registration logic here
+      // ignore: unused_local_variable
       String email = _emailController.text;
+      // ignore: unused_local_variable
       String password = _passwordController.text;
       // Perform registration
     }

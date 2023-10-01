@@ -1,7 +1,4 @@
 import 'package:bato_mechanic/data/mechanic_api.dart';
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
-import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
-import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/mechanic.dart';

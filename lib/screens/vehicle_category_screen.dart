@@ -1,14 +1,10 @@
 import 'package:bato_mechanic/screens/managers/values_manager.dart';
-import 'package:bato_mechanic/screens/vehicle_parts_screen.dart';
 import 'package:bato_mechanic/screens/vehicles_screen.dart';
 import 'package:bato_mechanic/utils/system_helper.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
 import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
 import 'package:bato_mechanic/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../models/vehicle_category.dart';
 
 class VehicleCategoryScreen extends StatefulWidget {
   const VehicleCategoryScreen({super.key});
@@ -47,7 +43,7 @@ class _VehicleCategoryScreenState extends State<VehicleCategoryScreen>
 
     return Scaffold(
       appBar: AppBar(),
-      drawer: AppDrawer(),
+      drawer: const AppDrawer(),
       body: _buildUI(vehicleCategoryViewModel),
     );
   }
@@ -82,59 +78,55 @@ class _VehicleCategoryScreenState extends State<VehicleCategoryScreen>
         ),
       );
     }
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const SizedBox(height: 180),
-          Text(
-            'Select your vehicle type',
-            style: Theme.of(context).textTheme.displayLarge,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const SizedBox(height: 180),
+        Text(
+          'Select your vehicle type',
+          style: Theme.of(context).textTheme.displayLarge,
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          itemCount: vehicleCategoryViewModel.vehicleCategories.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
           ),
-          GridView.builder(
-            shrinkWrap: true,
-            itemCount: vehicleCategoryViewModel.vehicleCategories.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemBuilder: (context, index) => GestureDetector(
-              onTap: () {
-                vehicleCategoryViewModel.selectedVehicleCategory =
-                    vehicleCategoryViewModel.vehicleCategories[index];
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const VehiclesScreen()));
-              },
-              child: Card(
-                margin: const EdgeInsets.all(AppMargin.m18),
-                child: Padding(
-                  padding: const EdgeInsets.all(AppMargin.m8),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.network(
-                          vehicleCategoryViewModel
-                              .vehicleCategories[index].image,
-                          width: 150,
+          itemBuilder: (context, index) => GestureDetector(
+            onTap: () {
+              vehicleCategoryViewModel.selectedVehicleCategory =
+                  vehicleCategoryViewModel.vehicleCategories[index];
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const VehiclesScreen()));
+            },
+            child: Card(
+              margin: const EdgeInsets.all(AppMargin.m18),
+              child: Padding(
+                padding: const EdgeInsets.all(AppMargin.m8),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.network(
+                        vehicleCategoryViewModel.vehicleCategories[index].image,
+                        width: 150,
+                      ),
+                      Flexible(
+                        child: Text(
+                          vehicleCategoryViewModel.vehicleCategories[index].name
+                              .capitalize(),
+                          overflow: TextOverflow.visible,
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
-                        Flexible(
-                          child: Text(
-                            vehicleCategoryViewModel
-                                .vehicleCategories[index].name
-                                .capitalize(),
-                            overflow: TextOverflow.visible,
-                            style: Theme.of(context).textTheme.displaySmall,
-                          ),
-                        ),
-                      ]),
-                ),
+                      ),
+                    ]),
               ),
             ),
           ),
-        ]),
-      ),
+        ),
+      ]),
     );
   }
 }

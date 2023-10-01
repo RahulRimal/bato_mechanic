@@ -3,13 +3,8 @@ import 'dart:io';
 
 import 'package:bato_mechanic/models/mechanic.dart';
 import 'package:bato_mechanic/models/vehicle_repair_request.dart';
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
-import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_parts_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
 import '../utils/toast_helper.dart';
@@ -131,9 +126,9 @@ mixin ViewModelInputs {
   List<Mechanic> _recommendedMechanics = [];
   Mechanic? _preferedMechanic;
   VehicleRepairRequest? _repairRequest;
-  late TextEditingController _issueDescriptionController =
+  final TextEditingController _issueDescriptionController =
       TextEditingController();
-  FocusNode _issueDescriptionFocusNode = FocusNode();
+  final FocusNode _issueDescriptionFocusNode = FocusNode();
 
   VideoPlayerController? _videoController;
   List<File> _selectedImages = [];

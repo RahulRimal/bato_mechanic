@@ -1,13 +1,10 @@
 import 'package:bato_mechanic/data/vehicle_api.dart';
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
-import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/system_models.dart';
 import '../../models/vehicle.dart';
 
-abstract class VehicleProvider
-    extends ChangeNotifier{
+abstract class VehicleProvider extends ChangeNotifier {
   List<Vehicle> _vehicles = [];
   bool _loading = false;
   VehicleError? _vehicleError;

@@ -1,5 +1,4 @@
 import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
-import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -31,6 +30,7 @@ class TrackMechanicScreen extends StatefulWidget {
 class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
   Position? _currentLocation;
   List<LatLng> routeCoordinatePoints = [];
+  // ignore: unused_field, prefer_final_fields
   bool _showBigScreenMap = false;
 
   _getRouteCoordinates() async {
@@ -119,7 +119,7 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                     ),
                   );
                 },
-                child: Container(
+                child: SizedBox(
                   height: 400,
                   // height: _showBigScreenMap
                   //     ? MediaQuery.of(context).size.height * 0.75
@@ -130,7 +130,7 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                           borderRadius: BorderRadius.circular(20.0),
                           child: _showMechanicTrackMap(context),
                         )
-                      : Center(child: const CircularProgressIndicator()),
+                      : const Center(child: CircularProgressIndicator()),
                 ),
               ),
               const SizedBox(height: 20),
@@ -155,11 +155,12 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   RichText(
                     text: TextSpan(
                       text: 'Estimated Arrival Time: ',
-                      style: TextStyle(color: Colors.black),
+                      style: const TextStyle(color: Colors.black),
                       children: <TextSpan>[
                         TextSpan(
+                          // ignore: unnecessary_string_interpolations
                           text: '${widget.estimatedTimeOfArrival}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.orange,
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -170,26 +171,26 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   )
                 ],
               ),
-              ListTile(
+              const ListTile(
                 title: Text(
                   'Tire repair',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   'Tire repair and replacement',
                   style: TextStyle(
                     fontSize: 14,
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
+              const Padding(
+                padding: EdgeInsets.symmetric(
                   horizontal: 16.0,
                   vertical: 8.0,
                 ),
@@ -201,14 +202,14 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                       children: [
                         Text(
                           'Total Cost',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           'No parts included',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                           ),
                         ),
@@ -216,7 +217,7 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                     ),
                     Text(
                       'Rs. 3000',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
@@ -225,8 +226,8 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
+              const Padding(
+                padding: EdgeInsets.symmetric(
                   horizontal: 16.0,
                   vertical: 8.0,
                 ),
@@ -235,14 +236,14 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   children: [
                     Text(
                       'Advance Cost Paid',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       'Rs. 2000',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
@@ -251,8 +252,8 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
+              const Padding(
+                padding: EdgeInsets.symmetric(
                   horizontal: 16.0,
                   vertical: 8.0,
                 ),
@@ -261,14 +262,14 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
                   children: [
                     Text(
                       'Remaining Cost',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       'Rs. 1000',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.orange,
@@ -332,16 +333,16 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
           mapController: mapSearchWidgetViewModel.mapController,
         ),
         CurrentLocationLayer(),
-        RichAttributionWidget(
-          popupInitialDisplayDuration: const Duration(seconds: 5),
-          animationConfig: const ScaleRAWA(),
+        const RichAttributionWidget(
+          popupInitialDisplayDuration: Duration(seconds: 5),
+          animationConfig: ScaleRAWA(),
           showFlutterMapAttribution: false,
           attributions: [
             TextSourceAttribution(
               'Full Screen Mode',
               prependCopyright: false,
             ),
-            const TextSourceAttribution(
+            TextSourceAttribution(
               'Tap on the map to show full screen map',
               prependCopyright: false,
             ),
@@ -360,24 +361,20 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
               width: 80,
               height: 80,
               point: LatLng(27.703292452047425, 85.33033043146135),
-              builder: (ctx) => Container(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.orange,
-                  size: 40.0,
-                ),
+              builder: (ctx) => const Icon(
+                Icons.location_on,
+                color: Colors.orange,
+                size: 40.0,
               ),
             ),
             Marker(
               width: 80,
               height: 80,
               point: LatLng(27.707645262018172, 85.33825904130937),
-              builder: (ctx) => Container(
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.purple,
-                  size: 40.0,
-                ),
+              builder: (ctx) => const Icon(
+                Icons.location_on,
+                color: Colors.purple,
+                size: 40.0,
               ),
             ),
           ],

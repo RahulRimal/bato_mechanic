@@ -1,5 +1,4 @@
 import 'package:bato_mechanic/data/vehicle_category_api.dart';
-import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/system_models.dart';

@@ -4,7 +4,7 @@ class RatingsAndReviewsScreen extends StatefulWidget {
   const RatingsAndReviewsScreen({super.key});
 
   @override
-  _RatingsAndReviewsScreenState createState() =>
+  State<RatingsAndReviewsScreen> createState() =>
       _RatingsAndReviewsScreenState();
 }
 

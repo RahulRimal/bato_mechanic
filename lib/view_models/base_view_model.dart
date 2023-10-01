@@ -1,8 +1,6 @@
-import 'package:bato_mechanic/models/vehicle_repair_request.dart';
 import 'package:bato_mechanic/view_models/providers/system_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'map_search_widget_view_model.dart';
 import 'vehicle_category_screen_view_model.dart';
