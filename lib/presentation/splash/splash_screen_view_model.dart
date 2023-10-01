@@ -1,4 +1,4 @@
-import 'package:bato_mechanic/presentation/managers/route_manager.dart';
+import 'package:bato_mechanic/app/managers/route_manager.dart';
 import 'package:bato_mechanic/presentation/base/base_view_model.dart';
 import 'package:bato_mechanic/providers/session_provider.dart';
 import 'package:flutter/material.dart';

@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:bato_mechanic/models/vehicle.dart';
 
 import '../models/system_models.dart';
-import '../presentation/managers/api_values_manager.dart';
+import '../app/managers/api_values_manager.dart';
 import 'package:http/http.dart' as http;
 
-import '../presentation/managers/strings_manager.dart';
-import '../presentation/managers/values_manager.dart';
+import '../app/managers/strings_manager.dart';
+import '../app/managers/values_manager.dart';
 
 class VehicleApi {
   static getVechiclesByCategory(String categoryId) async {

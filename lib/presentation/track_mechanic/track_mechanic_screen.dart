@@ -8,8 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/map_api.dart';
-import '../../utils/flutter_map_utils/control_buttons/control_buttons.dart';
-import '../../utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
+import '../../app/utils/flutter_map_utils/control_buttons/control_buttons.dart';
+import '../../app/utils/flutter_map_utils/scale_layer/scale_layer_plugin_option.dart';
 
 class TrackMechanicScreen extends StatefulWidget {
   final String mechanicName;

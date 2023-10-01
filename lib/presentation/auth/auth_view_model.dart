@@ -1,5 +1,5 @@
-import 'package:bato_mechanic/presentation/managers/route_manager.dart';
-import 'package:bato_mechanic/utils/toast_helper.dart';
+import 'package:bato_mechanic/app/managers/route_manager.dart';
+import 'package:bato_mechanic/app/utils/toast_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

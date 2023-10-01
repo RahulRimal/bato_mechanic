@@ -1,6 +1,6 @@
-import 'package:bato_mechanic/presentation/managers/values_manager.dart';
+import 'package:bato_mechanic/app/managers/values_manager.dart';
 import 'package:bato_mechanic/presentation/vehicles/vehicles_screen.dart';
-import 'package:bato_mechanic/utils/system_helper.dart';
+import 'package:bato_mechanic/app/utils/system_helper.dart';
 import 'package:bato_mechanic/presentation/vehicle_category/vehicle_category_screen_view_model.dart';
 import 'package:bato_mechanic/presentation/widgets/app_drawer.dart';
 import 'package:flutter/material.dart';

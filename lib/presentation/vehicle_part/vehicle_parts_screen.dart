@@ -3,7 +3,7 @@ import 'package:bato_mechanic/presentation/vehicle_part/vehicle_parts_screen_vie
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../managers/values_manager.dart';
+import '../../app/managers/values_manager.dart';
 
 class VehiclePartsScreen extends StatefulWidget {
   const VehiclePartsScreen({super.key});

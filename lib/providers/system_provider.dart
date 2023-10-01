@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/toast_helper.dart';
+import '../app/utils/toast_helper.dart';
 
 class SystemProvider with ChangeNotifier {
   String? _loadingMessage;

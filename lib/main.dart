@@ -1,4 +1,4 @@
-import 'package:bato_mechanic/presentation/managers/route_manager.dart';
+import 'package:bato_mechanic/app/managers/route_manager.dart';
 import 'package:bato_mechanic/presentation/splash/splash_screen.dart';
 import 'package:bato_mechanic/presentation/track_mechanic/track_mechanic_screen.dart';
 import 'package:bato_mechanic/presentation/auth/auth_view_model.dart';
@@ -13,7 +13,7 @@ import 'package:bato_mechanic/presentation/vehicles/vehicle_screen_view_model.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'presentation/managers/theme_manager.dart';
+import 'app/managers/theme_manager.dart';
 import 'presentation/vehicle_part/vehicle_parts_screen_view_model.dart';
 
 void main() {

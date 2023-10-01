@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../utils/toast_helper.dart';
+import '../../app/utils/toast_helper.dart';
 import '../base/base_view_model.dart';
 import '../../providers/mechanic_provider.dart';
 

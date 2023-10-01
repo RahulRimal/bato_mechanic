@@ -1,4 +1,4 @@
-import 'package:bato_mechanic/utils/system_helper.dart';
+import 'package:bato_mechanic/app/utils/system_helper.dart';
 import 'package:bato_mechanic/providers/system_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

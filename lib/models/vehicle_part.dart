@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import '../utils/system_helper.dart';
+import '../app/utils/system_helper.dart';
 
 VehiclePart vehiclePartFromJson(String str) =>
     VehiclePart.fromJson(json.decode(str));
