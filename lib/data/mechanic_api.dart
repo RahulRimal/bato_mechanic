@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:bato_mechanic/models/mechanic.dart';
 
 import '../models/system_models.dart';
-import '../screens/managers/api_values_manager.dart';
+import '../presentation/managers/api_values_manager.dart';
 import 'package:http/http.dart' as http;
 
-import '../screens/managers/strings_manager.dart';
-import '../screens/managers/values_manager.dart';
+import '../presentation/managers/strings_manager.dart';
+import '../presentation/managers/values_manager.dart';
 
 class MechanicApi {
   static getRecomendedMechanics(

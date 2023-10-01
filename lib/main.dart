@@ -1,19 +1,20 @@
-import 'package:bato_mechanic/screens/managers/route_manager.dart';
-import 'package:bato_mechanic/screens/splash_screen.dart';
-import 'package:bato_mechanic/view_models/auth_view_model.dart';
-import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
-import 'package:bato_mechanic/view_models/providers/system_provider.dart';
-import 'package:bato_mechanic/view_models/providers/theme_provider.dart';
-import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
-import 'package:bato_mechanic/view_models/splash_screen_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_repair_request_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
+import 'package:bato_mechanic/presentation/managers/route_manager.dart';
+import 'package:bato_mechanic/presentation/splash/splash_screen.dart';
+import 'package:bato_mechanic/presentation/track_mechanic/track_mechanic_screen.dart';
+import 'package:bato_mechanic/presentation/auth/auth_view_model.dart';
+import 'package:bato_mechanic/presentation/widgets/map_search/map_search_widget_view_model.dart';
+import 'package:bato_mechanic/providers/system_provider.dart';
+import 'package:bato_mechanic/providers/theme_provider.dart';
+import 'package:bato_mechanic/presentation/request_mechanic/request_mechanic_screen_view_model.dart';
+import 'package:bato_mechanic/presentation/splash/splash_screen_view_model.dart';
+import 'package:bato_mechanic/presentation/vehicle_category/vehicle_category_screen_view_model.dart';
+import 'package:bato_mechanic/presentation/vehicle_repair_request/vehicle_repair_request_view_model.dart';
+import 'package:bato_mechanic/presentation/vehicles/vehicle_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/managers/theme_manager.dart';
-import 'view_models/vehicle_parts_screen_view_model.dart';
+import 'presentation/managers/theme_manager.dart';
+import 'presentation/vehicle_part/vehicle_parts_screen_view_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -66,15 +67,15 @@ class MyApp extends StatelessWidget {
 
             return MaterialApp(
               title: 'Bato Mechanic',
-              // theme: ThemeData(
-              //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-              //   useMaterial3: true,
-              // ),
+
               themeMode: themeProvider.themeMode,
-              // themeMode: ThemeMode.system,
               theme: ThemeManager.lightTheme,
               darkTheme: ThemeManager.darkTheme,
-              home: const SplashScreen(),
+              // home: const SplashScreen(),
+              home: TrackMechanicScreen(
+                  mechanicName: "Krishna Rimal",
+                  estimatedTimeOfArrival: "10 minutes",
+                  mechanicLocation: "Baneshwor"),
               onGenerateRoute: RouteGenerator.getRoute,
             );
           }),

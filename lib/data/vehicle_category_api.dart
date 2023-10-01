@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:bato_mechanic/models/vehicle_category.dart';
-import 'package:bato_mechanic/screens/managers/api_values_manager.dart';
+import 'package:bato_mechanic/presentation/managers/api_values_manager.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/system_models.dart';
-import '../screens/managers/strings_manager.dart';
-import '../screens/managers/values_manager.dart';
+import '../presentation/managers/strings_manager.dart';
+import '../presentation/managers/values_manager.dart';
 
 class VehicleCategoryApi {
   static getCategories() async {

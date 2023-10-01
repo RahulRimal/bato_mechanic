@@ -5,9 +5,9 @@ import 'package:http/http.dart' as http;
 
 import '../models/session.dart';
 import '../models/system_models.dart';
-import '../screens/managers/api_values_manager.dart';
-import '../screens/managers/strings_manager.dart';
-import '../screens/managers/values_manager.dart';
+import '../presentation/managers/api_values_manager.dart';
+import '../presentation/managers/strings_manager.dart';
+import '../presentation/managers/values_manager.dart';
 
 class SessionApi {
   static Future<Object> getPreviousSession(String accessToken) async {

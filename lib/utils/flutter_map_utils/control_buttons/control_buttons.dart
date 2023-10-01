@@ -1,4 +1,4 @@
-import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
+import 'package:bato_mechanic/presentation/widgets/map_search/map_search_widget_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:geolocator/geolocator.dart';
