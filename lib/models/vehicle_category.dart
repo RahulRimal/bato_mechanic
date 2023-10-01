@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:bato_mechanic/data/vehicle_category_api.dart';
+
 VehicleCategory vehicleCategoryFromJson(String str) =>
     VehicleCategory.fromJson(json.decode(str));
 

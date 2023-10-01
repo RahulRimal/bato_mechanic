@@ -31,7 +31,7 @@ class VehiclePart {
 
   factory VehiclePart.fromJson(Map<String, dynamic> json) => VehiclePart(
         id: json["id"],
-        name: json["name"].toString().toCapitalize(),
+        name: json["name"].toString().capitalize(),
         vehicleId: json["vehicle"],
         image: json["image"],
       );

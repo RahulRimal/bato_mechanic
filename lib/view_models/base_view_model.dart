@@ -1,37 +1,33 @@
-import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_part_provider.dart';
-import 'package:bato_mechanic/view_models/providers/vehicle_repair_request_provider.dart';
+import 'package:bato_mechanic/models/vehicle_repair_request.dart';
+import 'package:bato_mechanic/view_models/providers/system_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'providers/map_provider.dart';
-import 'providers/system_provider.dart';
-import 'providers/vehicle_provider.dart';
+import 'map_search_widget_view_model.dart';
+import 'vehicle_category_screen_view_model.dart';
+import 'vehicle_parts_screen_view_model.dart';
+import 'vehicle_repair_request_view_model.dart';
+import 'vehicle_screen_view_model.dart';
 
-mixin BaseViewModel on ChangeNotifier {
+mixin BaseViewModel {
   late SystemProvider systemProvider;
-  late MapProvider mapProvider;
-  late VehicleCategoryProvider vehicleCategoryProvider;
-  late VehicleProvider vehicleProvider;
-  late VehiclePartProvider vehiclePartProvider;
-  late MechanicProvider mechanicProvider;
-  late VehicleRepairRequestProvider vehicleRepairRequestProvider;
-
-  // Future<SharedPreferences> preferences = SharedPreferences.getInstance();
-
-  bindBaseViewModal(BuildContext context) {
+  late MapSearchWidgetViewModel mapViewModel;
+  late VehicleCategoryScreenViewModel vehicleCategoryViewModel;
+  late VehiclesScreenViewModel vehicleViewModel;
+  late VehiclePartsScreenViewModel vehiclePartViewModel;
+  late VehicleRepairRequestViewModel vehicleRepairRequestViewModel;
+  initViewModels(BuildContext context) {
     systemProvider = Provider.of<SystemProvider>(context, listen: false);
-    mapProvider = Provider.of<MapProvider>(context, listen: false);
-    vehicleCategoryProvider =
-        Provider.of<VehicleCategoryProvider>(context, listen: false);
-    vehicleProvider = Provider.of<VehicleProvider>(context, listen: false);
-    vehiclePartProvider =
-        Provider.of<VehiclePartProvider>(context, listen: false);
-    mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
-    vehicleRepairRequestProvider =
-        Provider.of<VehicleRepairRequestProvider>(context, listen: false);
+    mapViewModel =
+        Provider.of<MapSearchWidgetViewModel>(context, listen: false);
+    vehicleCategoryViewModel =
+        Provider.of<VehicleCategoryScreenViewModel>(context, listen: false);
+    vehicleViewModel =
+        Provider.of<VehiclesScreenViewModel>(context, listen: false);
+    vehiclePartViewModel =
+        Provider.of<VehiclePartsScreenViewModel>(context, listen: false);
+    vehicleRepairRequestViewModel =
+        Provider.of<VehicleRepairRequestViewModel>(context, listen: false);
   }
-
-  unBindBaseViewModal() {}
 }

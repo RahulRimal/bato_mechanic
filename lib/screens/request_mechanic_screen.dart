@@ -32,279 +32,290 @@ class RequestMechanicScreen extends StatefulWidget {
 
 class _RequestMechanicScreenState extends State<RequestMechanicScreen>
     with WidgetsBindingObserver {
-  late MechanicProvider _mechanicProvider;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   // Register this object as an observer
-  //   WidgetsBinding.instance.addObserver(this);
-  //   _mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     _mechanicProvider.fetchRecomendedMechanics(
-  //         '1', widget.selectedVehicle.id.toString());
-  //   });
-  // }
+  late RequestMechanicScreenViewModel _requestMechanicViewModel;
 
   @override
   void initState() {
     super.initState();
-    _mechanicProvider = Provider.of<MechanicProvider>(context, listen: false);
-    _mechanicProvider.bindRMSViewModel(context, this);
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _requestMechanicViewModel =
+          Provider.of<RequestMechanicScreenViewModel>(context, listen: false);
+      _requestMechanicViewModel.init(context);
+    });
   }
 
   @override
   void dispose() {
-    _mechanicProvider.unBindRMSViewModel(this);
+    _requestMechanicViewModel.destroy();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    MechanicProvider mechanicProvider = context.watch<MechanicProvider>();
-    // VehicleRepairRequestProvider vehicleRepairRequestProvider =
-    // context.watch<VehicleRepairRequestProvider>();
+    RequestMechanicScreenViewModel requestMechanicViewModel =
+        context.watch<RequestMechanicScreenViewModel>();
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Request Mechanic'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Provide your location:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          title: const Text('Request Mechanic'),
+        ),
+        body: _buildUI(requestMechanicViewModel));
+  }
+
+  _buildUI(RequestMechanicScreenViewModel requestMechanicViewModel) {
+    if (requestMechanicViewModel.loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (requestMechanicViewModel.mechanicError != null) {
+      return Center(
+        child: Text(requestMechanicViewModel.mechanicError!.message.toString()),
+      );
+    }
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Provide your location:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 400,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: MapSearchWidget(),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Describe the issue:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: requestMechanicViewModel.issueDescriptionController,
+              focusNode: requestMechanicViewModel.issueDescriptionFocusNode,
+              decoration: const InputDecoration(
+                hintText: 'Describe the issue',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 5,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Attach photos:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ElevatedButton(
+                  // onPressed: _pickImage,
+                  onPressed: requestMechanicViewModel.pickImages,
+                  child: const Text('Add Photos'),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 400,
-                // child: _currentLocation != null
-                //     ? ClipRRect(
-                //         borderRadius: BorderRadius.circular(8),
-                //         // child: FlutterLocationPicker(
-                //         //   initZoom: 11,
-                //         //   minZoomLevel: 5,
-                //         //   maxZoomLevel: 16,
-                //         //   trackMyPosition: true,
-                //         //   searchBarBackgroundColor: Colors.white,
-                //         //   mapLanguage: 'en',
-                //         //   selectLocationButtonText: 'Set this location',
-                //         //   onError: (e) => print(e),
-                //         //   onPicked: (pickedData) {
-                //         //     print(pickedData.latLong.latitude);
-                //         //     print(pickedData.latLong.longitude);
-                //         //     print(pickedData.address);
-                //         //     print(pickedData.addressData['country']);
-                //         //   },
-                //         // ),
-                //         child: FlutterMapSearchWidget(),
-                //       )
-                //     : Center(
-                //         child: const CircularProgressIndicator(),
-                //       ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: MapSearchWidget(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Describe the issue:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: mechanicProvider.rmsIssueDescriptionController,
-                decoration: const InputDecoration(
-                  hintText: 'Describe the issue',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 5,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Attach photos:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  ElevatedButton(
-                    // onPressed: _pickImage,
-                    onPressed: mechanicProvider.rmsPickImages,
-                    child: const Text('Add Photos'),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        // children: _selectedImages.map((File image) {
-                        children: mechanicProvider.rmsSelectedImages
-                            .map((File image) {
-                          return Container(
-                            margin: const EdgeInsets.only(right: 8.0),
-                            width: 80,
-                            height: 80,
-                            child: Image.file(image, fit: BoxFit.cover),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Attach a video:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: mechanicProvider.rmsPickVideo,
-                child: const Text('Add Video'),
-              ),
-              if (mechanicProvider.rmsVideoController != null)
-                AspectRatio(
-                  aspectRatio:
-                      mechanicProvider.rmsVideoController!.value.aspectRatio,
-                  child: VideoPlayer(mechanicProvider.rmsVideoController!),
-                ),
-              const SizedBox(height: 16),
-              const Text(
-                'Select prefered mechanic',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (mechanicProvider.loading)
-                const Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                SizedBox(
-                  height: 130,
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      scrollDirection: Axis.horizontal,
-                      // itemCount: 5,
-                      itemCount:
-                          mechanicProvider.rmsRecommendedMechanics.length,
-                      itemBuilder: (context, index) => GestureDetector(
-                            onTap: () => mechanicProvider.rmsPreferedMechanic =
-                                mechanicProvider.rmsRecommendedMechanics[index],
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.amberAccent[200],
-                                border: mechanicProvider.rmsPreferedMechanic ==
-                                        mechanicProvider
-                                            .rmsRecommendedMechanics[index]
-                                    ? Border.all(
-                                        color: Colors.blue,
-                                        width: 2,
-                                      )
-                                    : null,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: SizedBox(
-                                width: 130,
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    Expanded(
-                                      // child: Image.asset(
-                                      //   'assets/images/no-profile.png',
-                                      // ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 4,
-                                        ),
-                                        child: Image.network(
-                                          mechanicProvider
-                                              .rmsRecommendedMechanics[index]
-                                              .image,
-                                        ),
-                                      ),
-                                    ),
-                                    // const SizedBox(height: 8),
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(20),
-                                          bottomRight: Radius.circular(20),
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            // '4.5',
-                                            mechanicProvider
-                                                .rmsRecommendedMechanics[index]
-                                                .averageRating
-                                                .toString(),
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 4,
-                                          ),
-                                          Icon(
-                                            Icons.star,
-                                            size: 18,
-                                            color: Colors.white,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      // children: _selectedImages.map((File image) {
+                      children: requestMechanicViewModel.selectedImages
+                          .map((File image) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8.0),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.black,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topRight,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(14),
+                                  child: Image.file(
+                                    image,
+                                    width: 100,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )),
+                              Positioned(
+                                top: -10,
+                                right: -10,
+                                child: IconButton(
+                                  onPressed: () {
+                                    requestMechanicViewModel
+                                        .removeSelectedImage(image);
+                                  },
+                                  icon: Icon(
+                                    Icons.cancel,
+                                    color: Colors.amberAccent[200],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                // onPressed: () => Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const TrackMechanicScreen(
-                //         mechanicName: 'Suman Koirala',
-                //         estimatedTimeOfArrival: '10 minutes',
-                //         mechanicLocation: 'Muglin Road'),
-                //   ),
-                // ),
-                onPressed: () {
-                  mechanicProvider.rmsRequestForVehicleRepair(context);
-                },
-
-                child: const Text('Request for a mechanic'),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Attach a video:',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: requestMechanicViewModel.pickVideo,
+              child: requestMechanicViewModel.videoController != null
+                  ? const Text('Change Video')
+                  : const Text('Add Video'),
+            ),
+            if (requestMechanicViewModel.videoController != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: AspectRatio(
+                  aspectRatio: requestMechanicViewModel
+                      .videoController!.value.aspectRatio,
+                  child: VideoPlayer(requestMechanicViewModel.videoController!),
+                ),
+              ),
+            const SizedBox(height: 16),
+            const Text(
+              'Select prefered mechanic',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (requestMechanicViewModel.loading)
+              const Center(
+                child: CircularProgressIndicator(),
+              )
+            else
+              SizedBox(
+                height: 130,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    // itemCount: 5,
+                    itemCount:
+                        requestMechanicViewModel.recommendedMechanics.length,
+                    itemBuilder: (context, index) => GestureDetector(
+                          onTap: () =>
+                              requestMechanicViewModel.preferedMechanic =
+                                  requestMechanicViewModel
+                                      .recommendedMechanics[index],
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.amberAccent[200],
+                              border:
+                                  requestMechanicViewModel.preferedMechanic ==
+                                          requestMechanicViewModel
+                                              .recommendedMechanics[index]
+                                      ? Border.all(
+                                          color: Colors.blue,
+                                          width: 2,
+                                        )
+                                      : null,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: SizedBox(
+                              width: 130,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(
+                                    // child: Image.asset(
+                                    //   'assets/images/no-profile.png',
+                                    // ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 4,
+                                      ),
+                                      child: Image.network(
+                                        requestMechanicViewModel
+                                            .recommendedMechanics[index].image,
+                                      ),
+                                    ),
+                                  ),
+                                  // const SizedBox(height: 8),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.only(
+                                        bottomLeft: Radius.circular(20),
+                                        bottomRight: Radius.circular(20),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          // '4.5',
+                                          requestMechanicViewModel
+                                              .recommendedMechanics[index]
+                                              .averageRating
+                                              .toString(),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Icon(
+                                          Icons.star,
+                                          size: 18,
+                                          color: Colors.white,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )),
+              ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                requestMechanicViewModel.requestForVehicleRepair(context);
+              },
+              child: const Text('Request for a mechanic'),
+            ),
+          ],
         ),
       ),
     );

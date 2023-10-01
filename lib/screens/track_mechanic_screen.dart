@@ -1,3 +1,4 @@
+import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -285,9 +286,10 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
 
   FlutterMap _showMechanicTrackMap(BuildContext context) {
     LatLng cameraCenter = LatLng(27.703292452047425, 85.33033043146135);
-    MapProvider mapProvider = context.watch<MapProvider>();
+    MapSearchWidgetViewModel mapSearchWidgetViewModel =
+        context.watch<MapSearchWidgetViewModel>();
     return FlutterMap(
-      mapController: mapProvider.mswMapController,
+      mapController: mapSearchWidgetViewModel.mapController,
       options: MapOptions(
         // onTap: (tapPosition, latLng) {
         //   showDialog(
@@ -327,7 +329,7 @@ class _TrackMechanicScreenState extends State<TrackMechanicScreen> {
           mini: false,
           padding: 10,
           alignment: Alignment.bottomRight,
-          mapController: mapProvider.mswMapController,
+          mapController: mapSearchWidgetViewModel.mapController,
         ),
         CurrentLocationLayer(),
         RichAttributionWidget(

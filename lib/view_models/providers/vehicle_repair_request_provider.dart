@@ -6,7 +6,7 @@ import '../../data/vehicle_repair_request_api.dart';
 import '../../models/system_models.dart';
 import '../../models/vehicle_repair_request.dart';
 
-class VehicleRepairRequestProvider with ChangeNotifier {
+abstract class VehicleRepairRequestProvider with ChangeNotifier {
   List<VehicleRepairRequest> _vehicleRepairRequests = [];
   bool _loading = false;
   VehicleRepairRequestError? _vehicleRepairRequestError;

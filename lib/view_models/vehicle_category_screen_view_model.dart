@@ -1,23 +1,19 @@
-import 'package:bato_mechanic/view_models/base_view_model.dart';
-import 'package:flutter/material.dart';
+import 'package:bato_mechanic/data/vehicle_category_api.dart';
 
-mixin VehicleCategoryScreenViewModel on ChangeNotifier, BaseViewModel {
-  bindVCSViewModel(
-      BuildContext context, WidgetsBindingObserver widgetsBindingObserver) {
-    bindBaseViewModal(context);
-    // Register this object as an observer
-    WidgetsBinding.instance.addObserver(widgetsBindingObserver);
+import 'providers/vehicle_category_provider.dart';
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (vehicleCategoryProvider.vehicleCategories.isEmpty) {
-        vehicleCategoryProvider.getVechicleCategories();
-      }
-    });
+class VehicleCategoryScreenViewModel extends VehicleCategoryProvider with VehicleCategoryScreenViewModelInputs, VehicleCategoryScreenViewModelOutputs{
+
+
+  init(){
+    super.getVechicleCategories();
   }
+  
+}
 
-  unBindVCSViewModel(WidgetsBindingObserver widgetsBindingObserver) {
-    unBindBaseViewModal();
-    // Unregister this object as an observer
-    WidgetsBinding.instance.removeObserver(widgetsBindingObserver);
-  }
+mixin VehicleCategoryScreenViewModelInputs{
+}
+
+mixin VehicleCategoryScreenViewModelOutputs{
+  
 }

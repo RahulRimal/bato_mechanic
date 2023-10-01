@@ -1,107 +1,42 @@
 import 'dart:async';
 
-import 'package:bato_mechanic/view_models/base_view_model.dart';
+import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
 
-// class MapSearchWidgetViewModel with ChangeNotifier, BaseViewModel {
-mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
-  LatLng _markerPosition = LatLng(27.703292452047425, 85.33033043146135);
-  String? _selectedPlaceName;
-  MapController _mapController = MapController();
-  late AnimationController _animationController;
-  TextEditingController _searchController = TextEditingController();
-  FocusNode _searchFocusNode = FocusNode();
-  List<OSMdata> _options = <OSMdata>[];
-  Timer? _debounce;
+import 'base_view_model.dart';
 
-  // late double _width;
-  // late double _height;
-  double _width = 10;
-  double _height = 10;
-
-  // StreamSubscription<MapEvent>? mapEventSubscription;
-
-  LatLng get mswMarkerPosition => _markerPosition;
-  set mswMarkerPosition(LatLng value) {
-    _markerPosition = value;
-    notifyListeners();
-  }
-
-  MapController get mswMapController => _mapController;
-  set mswMapController(MapController value) {
-    _mapController = value;
-  }
-
-  AnimationController get mswAnimationController => _animationController;
-  set mswAnimationController(AnimationController value) {
-    _animationController = value;
-  }
-
-  TextEditingController get mswSearchController => _searchController;
-  set mswSearchController(TextEditingController value) {
-    _searchController = value;
-  }
-
-  FocusNode get mswSearchFocusNode => _searchFocusNode;
-  set mswSearchFocusNode(FocusNode value) {
-    _searchFocusNode = value;
-  }
-
-  List<OSMdata> get mswOptions => _options;
-  set mswOptions(List<OSMdata> value) {
-    _options = value;
-    notifyListeners();
-  }
-
-  Timer? get mswDebounce => _debounce;
-  set mswDebounce(Timer? value) {
-    _debounce = value;
-  }
-
-  double get mswWidth => _width;
-  set mswWidth(double value) {
-    _width = value;
-  }
-
-  double get mswHeight => _height;
-  set mswHeight(double value) {
-    _height = value;
-  }
-
-  String? get mswSelectedPlaceName => _selectedPlaceName;
-  set mswSelectedPlaceName(String? value) {
-    _selectedPlaceName = value;
-    if (value != null) _searchController.text = value;
-    notifyListeners();
-  }
-
-  bindMSWViewModel(BuildContext context, TickerProvider vsync) {
-    bindBaseViewModal(context);
-
-    mswMapController = MapController();
+class MapSearchWidgetViewModel extends MapProvider
+    with BaseViewModel, ViewModelInputs, ViewModelOutputs {
+  init(BuildContext context, TickerProvider vsync) {
+    initViewModels(context);
+    _mapController = MapController();
     _animationController = AnimationController(
         duration: const Duration(milliseconds: 500), vsync: vsync);
 
-    /// The above code is listening to the mapEventStream and when the mapEventMoveEnd event is
+    if (super.userPosition == null) {
+      super.initializeLocation();
+    }
+
+    /// The below code is listening to the mapEventStream and when the mapEventMoveEnd event is
     /// triggered, it moves the pointer to that position
 
-    mswMapController.mapEventStream.listen((event) async {
+    _mapController.mapEventStream.listen((event) async {
       if (event is MapEventMove) {
-        mswMarkerPosition = mswMapController
+        _markerPosition = _mapController
             .pointToLatLng(CustomPoint(_width / 2, _height / 2)) as LatLng;
-        // notifyListeners();
+        notifyListeners();
       }
       if (event is MapEventMoveEnd) {
-        String? placeName = await mapProvider.getLocationName(
-            event.center.latitude, event.center.longitude);
+        String? placeName = await super
+            .getLocationName(event.center.latitude, event.center.longitude);
         if (placeName != null) {
-          // _searchController.text = placeName;
-          mswSelectedPlaceName = placeName;
-          // notifyListeners();
+          _searchController.text = placeName;
+          _selectedPlaceName = placeName;
+          notifyListeners();
         } else {
           print('here');
         }
@@ -109,22 +44,20 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
     });
   }
 
-  unBindMSWViewModel() {
-    _mapController.dispose();
+  destroy() {
+    // _mapController.dispose();
     _animationController.dispose();
-    unBindBaseViewModal();
   }
 
-  void mswAnimatedMapMove(LatLng destLocation, double destZoom, bool mounted,
+  void animatedMapMove(LatLng destLocation, double destZoom, bool mounted,
       TickerProvider vsync) {
     // Create some tweens. These serve to split up the transition from one location to another.
     // In our case, we want to split the transition be<tween> our current map center and the destination.
     final latTween = Tween<double>(
-        begin: mswMapController.center.latitude, end: destLocation.latitude);
+        begin: _mapController.center.latitude, end: destLocation.latitude);
     final lngTween = Tween<double>(
-        begin: mswMapController.center.longitude, end: destLocation.longitude);
-    final zoomTween =
-        Tween<double>(begin: mswMapController.zoom, end: destZoom);
+        begin: _mapController.center.longitude, end: destLocation.longitude);
+    final zoomTween = Tween<double>(begin: _mapController.zoom, end: destZoom);
     // Create a animation controller that has a duration and a TickerProvider.
     if (mounted) {
       _animationController = AnimationController(
@@ -144,6 +77,79 @@ mixin MapSearchWidgetViewModel on ChangeNotifier, BaseViewModel {
     if (mounted) {
       _animationController.forward();
     }
+  }
+}
+
+mixin ViewModelInputs {
+  LatLng _markerPosition = LatLng(27.703292452047425, 85.33033043146135);
+  String? _selectedPlaceName;
+  MapController _mapController = MapController();
+  late AnimationController _animationController;
+  TextEditingController _searchController = TextEditingController();
+  FocusNode _searchFocusNode = FocusNode();
+  List<OSMdata> _options = <OSMdata>[];
+  Timer? _debounce;
+
+  // late double _width;
+  // late double _height;
+  double _width = 10;
+  double _height = 10;
+
+  LatLng get markerPosition => _markerPosition;
+  MapController get mapController => _mapController;
+  AnimationController get animationController => _animationController;
+
+  TextEditingController get searchController => _searchController;
+  FocusNode get searchFocusNode => _searchFocusNode;
+  List<OSMdata> get options => _options;
+  Timer? get debounce => _debounce;
+  double get width => _width;
+  double get height => _height;
+  String? get selectedPlaceName => _selectedPlaceName;
+}
+mixin ViewModelOutputs on ChangeNotifier, ViewModelInputs {
+  set markerPosition(LatLng value) {
+    _markerPosition = value;
+    notifyListeners();
+  }
+
+  set mapController(MapController value) {
+    _mapController = value;
+  }
+
+  set animationController(AnimationController value) {
+    _animationController = value;
+  }
+
+  set searchController(TextEditingController value) {
+    _searchController = value;
+  }
+
+  set searchFocusNode(FocusNode value) {
+    _searchFocusNode = value;
+  }
+
+  set options(List<OSMdata> value) {
+    _options = value;
+    notifyListeners();
+  }
+
+  set debounce(Timer? value) {
+    _debounce = value;
+  }
+
+  set width(double value) {
+    _width = value;
+  }
+
+  set height(double value) {
+    _height = value;
+  }
+
+  set selectedPlaceName(String? value) {
+    _selectedPlaceName = value;
+    if (value != null) _searchController.text = value;
+    notifyListeners();
   }
 }
 

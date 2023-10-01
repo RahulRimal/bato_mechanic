@@ -90,7 +90,8 @@ class MapApi {
     try {
       String url =
           'https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude&zoom=18&addressdetails=1&accept-language=en';
-      var response = await http.post(Uri.parse(url));
+      // var response = await http.post(Uri.parse(url));
+      var response = await http.get(Uri.parse(url));
 
       // if (response.statusCode == 200) {
 

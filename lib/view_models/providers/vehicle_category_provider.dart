@@ -1,13 +1,12 @@
 import 'package:bato_mechanic/data/vehicle_category_api.dart';
-import 'package:bato_mechanic/view_models/base_view_model.dart';
-import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
+import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/system_models.dart';
 import '../../models/vehicle_category.dart';
 
-class VehicleCategoryProvider
-    with ChangeNotifier, BaseViewModel, VehicleCategoryScreenViewModel {
+abstract class VehicleCategoryProvider extends ChangeNotifier {
+// class VehicleCategoryProvider extends ChangeNotifier {
   List<VehicleCategory> _vehicleCategories = [];
   bool _loading = false;
   VehicleCategoryError? _vehicleCategoryError;
@@ -38,12 +37,10 @@ class VehicleCategoryProvider
 
   getVechicleCategories() async {
     loading = true;
-    var response = await VechicleCategoryApi.getCategories();
+    var response = await VehicleCategoryApi.getCategories();
 
     if (response is Success) {
       vehicleCategories = response.response as List<VehicleCategory>;
-      // loading = false;
-      // return response.response;
     }
 
     if (response is Failure) {

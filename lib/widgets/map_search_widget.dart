@@ -23,25 +23,21 @@ class MapSearchWidget extends StatefulWidget {
 
 class _MapSearchWidgetState extends State<MapSearchWidget>
     with TickerProviderStateMixin, WidgetsBindingObserver {
-  late MapProvider mapProvider;
+  late MapSearchWidgetViewModel _mapSearchWidgetViewModel;
 
   @override
   void initState() {
     super.initState();
-    // animationController = AnimationController(
-    //     duration: const Duration(milliseconds: 500), vsync: this);
-    mapProvider = Provider.of<MapProvider>(context, listen: false);
-    mapProvider.bindMSWViewModel(context, this);
-    // mapProvider.mswAnimationController = AnimationController(
-    //     duration: const Duration(milliseconds: 500), vsync: this);
 
-    // Register this object as an observer
     WidgetsBinding.instance.addObserver(this);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mapProvider.userPosition == null) {
-        mapProvider.initializeLocation();
-      }
+      _mapSearchWidgetViewModel =
+          Provider.of<MapSearchWidgetViewModel>(context, listen: false);
+      _mapSearchWidgetViewModel.init(context, this);
+      // if (_mapSearchWidgetViewModel.userPosition == null) {
+      //   _mapSearchWidgetViewModel.initializeLocation();
+      // }
     });
   }
 
@@ -49,12 +45,13 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Added this line to save the reference of provider so it doesn't throw an exception on dispose
-    mapProvider = Provider.of<MapProvider>(context, listen: false);
+    _mapSearchWidgetViewModel =
+        Provider.of<MapSearchWidgetViewModel>(context, listen: false);
   }
 
   @override
   void dispose() {
-    mapProvider.unBindMSWViewModel();
+    _mapSearchWidgetViewModel.destroy();
     // Unregister this object as an observer
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
@@ -62,56 +59,40 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
 
   @override
   Widget build(BuildContext context) {
-    MapProvider mapProvider = context.watch<MapProvider>();
+    MapSearchWidgetViewModel mapSearchWidgetViewModel =
+        context.watch<MapSearchWidgetViewModel>();
 
     return SafeArea(
-      // child: mapProvider.loading
-      //     ? const Center(child: CircularProgressIndicator())
-      // :
       child: Stack(
         children: [
-          _showMap(context),
-          _buildSearchBar(),
+          _showMap(context, mapSearchWidgetViewModel),
+          _buildSearchBar(mapSearchWidgetViewModel),
         ],
       ),
     );
   }
 
-  Widget _showMap(BuildContext context) {
-    MapProvider mapProvider = context.watch<MapProvider>();
+  Widget _showMap(
+      BuildContext context, MapSearchWidgetViewModel mapSearchWidgetViewModel) {
+    // MapSearchWidgetViewModel mapSearchWidgetViewModel =
+    //     context.watch<MapSearchWidgetViewModel>();
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-      mapProvider.mswWidth = constraints.maxWidth;
-      mapProvider.mswHeight = constraints.maxHeight;
+      mapSearchWidgetViewModel.width = constraints.maxWidth;
+      mapSearchWidgetViewModel.height = constraints.maxHeight;
       return FlutterMap(
-        mapController: mapProvider.mswMapController,
+        mapController: mapSearchWidgetViewModel.mapController,
         options: MapOptions(
-          // onTap: (tapPosition, latLng) {
-          //   showDialog(
-          //     context: context,
-          //     builder: (BuildContext context) {
-          //       return AlertDialog(
-          //         insetPadding: EdgeInsets.zero,
-          //         contentPadding: EdgeInsets.zero,
-          //         content: SizedBox(
-          //             height: MediaQuery.of(context).size.height,
-          //             width: MediaQuery.of(context).size.width,
-          //             child: _showMap(context)),
-          //       );
-          //     },
-          //   );
-          // },
           onTap: (tapPosition, latLng) async {
-            mapProvider.mswMarkerPosition = latLng;
+            mapSearchWidgetViewModel.markerPosition = latLng;
 
-            String placeName = await mapProvider.getLocationName(
+            String placeName = await mapSearchWidgetViewModel.getLocationName(
                 latLng.latitude, latLng.longitude);
-            // mapProvider.mswSearchController.text = placeName;
-            mapProvider.mswSelectedPlaceName = placeName;
-            mapProvider.mswAnimatedMapMove(
-                latLng, mapProvider.mswMapController.zoom, mounted, this);
+            mapSearchWidgetViewModel.selectedPlaceName = placeName;
+            mapSearchWidgetViewModel.animatedMapMove(latLng,
+                mapSearchWidgetViewModel.mapController.zoom, mounted, this);
           },
-          center: mapProvider.mswMarkerPosition,
+          center: mapSearchWidgetViewModel.markerPosition,
           zoom: 15.0,
         ),
         nonRotatedChildren: [
@@ -121,25 +102,25 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
             mini: false,
             padding: 10,
             alignment: Alignment.bottomRight,
-            mapController: mapProvider.mswMapController,
+            mapController: mapSearchWidgetViewModel.mapController,
             // map: FlutterMapState.of(context),
           ),
           _buildSelectButton(),
-          const RichAttributionWidget(
-            popupInitialDisplayDuration: const Duration(seconds: 5),
-            animationConfig: const ScaleRAWA(),
-            showFlutterMapAttribution: false,
-            attributions: [
-              TextSourceAttribution(
-                'Full Screen Mode',
-                prependCopyright: false,
-              ),
-              const TextSourceAttribution(
-                'Tap on the map to show full screen map',
-                prependCopyright: false,
-              ),
-            ],
-          ),
+          // const RichAttributionWidget(
+          //   popupInitialDisplayDuration: const Duration(seconds: 5),
+          //   animationConfig: const ScaleRAWA(),
+          //   showFlutterMapAttribution: false,
+          //   attributions: [
+          //     TextSourceAttribution(
+          //       'Full Screen Mode',
+          //       prependCopyright: false,
+          //     ),
+          //     TextSourceAttribution(
+          //       'Tap on the map to show full screen map',
+          //       prependCopyright: false,
+          //     ),
+          //   ],
+          // ),
         ],
         children: [
           TileLayer(
@@ -147,14 +128,14 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
             userAgentPackageName: 'dev.fleaflet.flutter_map.example',
             tileProvider: NetworkTileProvider(),
           ),
-          if (!mapProvider.loading)
+          if (!mapSearchWidgetViewModel.loading)
             MarkerLayer(
               rotate: true,
               markers: [
                 Marker(
                   width: 80,
                   height: 80,
-                  point: mapProvider.mswMarkerPosition,
+                  point: mapSearchWidgetViewModel.markerPosition,
                   builder: (ctx) => const Icon(
                     Icons.location_on,
                     color: Colors.orange,
@@ -164,7 +145,7 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
               ],
             ),
           CurrentLocationLayer(),
-          if (mapProvider.loading)
+          if (mapSearchWidgetViewModel.loading)
             Center(
               child: CircularProgressIndicator(),
             ),
@@ -173,8 +154,9 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
     });
   }
 
-  Widget _buildSearchBar() {
-    MapProvider mapProvider = context.watch<MapProvider>();
+  Widget _buildSearchBar(MapSearchWidgetViewModel mapSearchWidgetViewModel) {
+    // MapSearchWidgetViewModel mapSearchWidgetViewModel =
+    //     context.watch<MapSearchWidgetViewModel>();
     OutlineInputBorder inputBorder = OutlineInputBorder(
       borderSide: BorderSide(color: Theme.of(context).primaryColor),
     );
@@ -194,8 +176,8 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
         child: Column(
           children: [
             TextFormField(
-                controller: mapProvider.mapProvider.mswSearchController,
-                focusNode: mapProvider.mswSearchFocusNode,
+                controller: mapSearchWidgetViewModel.searchController,
+                focusNode: mapSearchWidgetViewModel.searchFocusNode,
                 decoration: InputDecoration(
                   hintText: 'Enter place name',
                   fillColor: Colors.white,
@@ -205,9 +187,9 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
                   // hintStyle: TextStyle(color: widget.searchBarHintColor),
                   suffixIcon: IconButton(
                     onPressed: () {
-                      mapProvider.mapProvider.mswSearchController.clear();
+                      mapSearchWidgetViewModel.searchController.clear();
 
-                      mapProvider.mswOptions = [];
+                      mapSearchWidgetViewModel.options = [];
                     },
                     icon: Icon(
                       Icons.clear,
@@ -215,18 +197,19 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
                   ),
                 ),
                 onChanged: (String value) {
-                  if (mapProvider.mswDebounce?.isActive ?? false) {
-                    mapProvider.mswDebounce?.cancel();
+                  if (mapSearchWidgetViewModel.debounce?.isActive ?? false) {
+                    mapSearchWidgetViewModel.debounce?.cancel();
                   }
 
-                  mapProvider.mswDebounce =
+                  mapSearchWidgetViewModel.debounce =
                       Timer(const Duration(milliseconds: 20), () async {
                     // var decodedResponse = await MapApi.getSearchLocations(
                     //     mapProvider.mapProvider.mswSearchController.text);
-                    var response = await mapProvider.getSearchLocations(
-                        mapProvider.mswSearchController.text);
+                    var response =
+                        await mapSearchWidgetViewModel.getSearchLocations(
+                            mapSearchWidgetViewModel.searchController.text);
 
-                    mapProvider.mswOptions = response
+                    mapSearchWidgetViewModel.options = response
                         .map((e) => OSMdata(
                             displayname: e['display_name'],
                             latitude: double.parse(e['lat']),
@@ -261,39 +244,40 @@ class _MapSearchWidgetState extends State<MapSearchWidget>
   }
 
   Widget _buildListView() {
-    MapProvider mapProvider = context.watch<MapProvider>();
+    MapSearchWidgetViewModel mapSearchWidgetViewModel =
+        context.watch<MapSearchWidgetViewModel>();
     return ListView.builder(
         shrinkWrap: true,
         // physics: const NeverScrollableScrollPhysics(),
         // itemCount: mapProvider.mswOptions.length > 5
         //     ? 5
         //     : mapProvider.mswOptions.length,
-        itemCount: mapProvider.mswOptions.length,
+        itemCount: mapSearchWidgetViewModel.options.length,
         itemBuilder: (context, index) {
           return Container(
             color: Colors.white,
             child: ListTile(
               leading: Icon(Icons.location_on),
               title: Text(
-                mapProvider.mswOptions[index].displayname,
+                mapSearchWidgetViewModel.options[index].displayname,
               ),
               onTap: () {
                 LatLng positionToMove = LatLng(
-                    mapProvider.mswOptions[index].latitude,
-                    mapProvider.mswOptions[index].longitude);
+                    mapSearchWidgetViewModel.options[index].latitude,
+                    mapSearchWidgetViewModel.options[index].longitude);
 
-                mapProvider.mswMarkerPosition = positionToMove;
-                mapProvider.mswMapController.center.latitude =
+                mapSearchWidgetViewModel.markerPosition = positionToMove;
+                mapSearchWidgetViewModel.mapController.center.latitude =
                     positionToMove.latitude;
-                mapProvider.mswMapController.center.longitude =
+                mapSearchWidgetViewModel.mapController.center.longitude =
                     positionToMove.longitude;
 
                 // mapProvider.mswAnimatedMapMove(positionToMove, 18.0, mounted);
-                mapProvider.mswAnimatedMapMove(positionToMove,
-                    mapProvider.mswMapController.zoom, mounted, this);
+                mapSearchWidgetViewModel.animatedMapMove(positionToMove,
+                    mapSearchWidgetViewModel.mapController.zoom, mounted, this);
 
-                mapProvider.mswSearchFocusNode.unfocus();
-                mapProvider.mswOptions.clear();
+                mapSearchWidgetViewModel.searchFocusNode.unfocus();
+                mapSearchWidgetViewModel.options.clear();
               },
             ),
           );

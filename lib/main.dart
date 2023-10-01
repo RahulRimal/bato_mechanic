@@ -1,27 +1,40 @@
+import 'package:bato_mechanic/models/vehicle_repair_request.dart';
 import 'package:bato_mechanic/screens/feedback_and_contact_screen.dart';
+import 'package:bato_mechanic/screens/managers/route_manager.dart';
 import 'package:bato_mechanic/screens/mechanic_profile_screen.dart';
 import 'package:bato_mechanic/screens/rating_and_reviews_screen.dart';
 import 'package:bato_mechanic/screens/service_history_screen.dart';
+import 'package:bato_mechanic/screens/splash_screen.dart';
 import 'package:bato_mechanic/screens/support_chat_screen.dart';
 import 'package:bato_mechanic/screens/temp_screen.dart';
 import 'package:bato_mechanic/screens/track_mechanic_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_detail_screen.dart';
 import 'package:bato_mechanic/screens/vehicle_category_screen.dart';
+import 'package:bato_mechanic/view_models/auth_view_model.dart';
+import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:bato_mechanic/view_models/providers/mechanic_provider.dart';
 import 'package:bato_mechanic/view_models/providers/system_provider.dart';
+import 'package:bato_mechanic/view_models/providers/theme_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_part_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_repair_request_provider.dart';
+import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
+import 'package:bato_mechanic/view_models/splash_screen_view_model.dart';
+import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
+import 'package:bato_mechanic/view_models/vehicle_repair_request_view_model.dart';
+import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
 import 'package:bato_mechanic/widgets/map_search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'models/vehicle.dart';
 import 'screens/authentication_screen.dart';
+import 'screens/managers/theme_manager.dart';
 import 'screens/payment_integration_screen.dart';
 import 'screens/request_mechanic_screen.dart';
+import 'view_models/vehicle_parts_screen_view_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +43,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -39,64 +51,54 @@ class MyApp extends StatelessWidget {
           create: (_) => SystemProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => MapProvider(),
+          create: (_) => SplashScreenViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => VehicleCategoryProvider(),
+          create: (_) => AuthViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => VehicleProvider(),
+          create: (_) => MapSearchWidgetViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => VehiclePartProvider(),
+          // create: (_) => VehicleCategoryProvider(),
+          create: (_) => VehicleCategoryScreenViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => MechanicProvider(),
+          // create: (_) => VehicleProvider(),
+          create: (_) => VehiclesScreenViewModel(),
         ),
         ChangeNotifierProvider(
-          create: (_) => VehicleRepairRequestProvider(),
+          // create: (_) => VehiclePartProvider(),
+          create: (_) => VehiclePartsScreenViewModel(),
+        ),
+        ChangeNotifierProvider(
+          // create: (_) => MechanicProvider(),
+          create: (_) => RequestMechanicScreenViewModel(),
+        ),
+        ChangeNotifierProvider(
+          // create: (_) => VehicleRepairRequestProvider(),
+          create: (_) => VehicleRepairRequestViewModel(),
         ),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+      child: ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+          builder: (context, _) {
+            final themeProvider = Provider.of<ThemeProvider>(context);
 
-        // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        // home: const HomeScreen(),
-        home: const VehicleCategoryScreen(),
-        // home: Scaffold(body: MapSearchWidget()),
-        // home: TempScreen(),
-        // home: MechanicProfileScreen(
-        //     mechanicName: 'Sam',
-        //     specialization: 'Heavy Machinary',
-        //     experience: '3 years',
-        //     rating: 4.5,
-        //     imagePath: 'assets/images/parts/wheel.png'),
-        // home: RequestMechanicScreen(),
-
-        // home: RequestMechanicScreen(),
-        // home: TrackMechanicScreen(
-        //     mechanicName: 'Suman Kanu',
-        //     estimatedTimeOfArrival: '10 minutes',
-        //     mechanicLocation: 'Muglin Road'),
-        // home: AuthenticationScreen(),
-        // home: VehicleDetailsScreen(
-        //   vehicle: Vehicle(
-        //     name: 'Car',
-        //     image: 'assets/images/vehicle/car.png',
-        //     type: '4 wheeler',
-        //     tagLine: 'Small four wheeler',
-        //   ),
-        // ),
-        // home: ServiceHistoryScreen(),
-        // home: RatingsAndReviewsScreen(),
-        // home: SupportChatScreen(),
-        // home: FeedbackContactScreen() ,
-        // home: const PaymentIntegrationScreen(),
-      ),
+            return MaterialApp(
+              title: 'Flutter Demo',
+              // theme: ThemeData(
+              //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              //   useMaterial3: true,
+              // ),
+              // themeMode: themeProvider.themeMode,
+              themeMode: ThemeMode.system,
+              theme: ThemeManager.lightTheme,
+              darkTheme: ThemeManager.darkTheme,
+              home: SplashScreen(),
+              onGenerateRoute: RouteGenerator.getRoute,
+            );
+          }),
     );
   }
 }

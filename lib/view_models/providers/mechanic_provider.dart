@@ -1,5 +1,5 @@
 import 'package:bato_mechanic/data/mechanic_api.dart';
-import 'package:bato_mechanic/view_models/base_view_model.dart';
+import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
 import 'package:bato_mechanic/view_models/request_mechanic_screen_view_model.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +7,7 @@ import 'package:flutter/material.dart';
 import '../../models/mechanic.dart';
 import '../../models/system_models.dart';
 
-class MechanicProvider
-    with
-        ChangeNotifier,
-        BaseViewModel,
-        MapSearchWidgetViewModel,
-        RequestMechanicScreenViewModel {
+abstract class MechanicProvider extends ChangeNotifier {
   List<Mechanic> _mechanics = [];
   bool _loading = false;
   MechanicError? _mechanicError;
@@ -42,6 +37,7 @@ class MechanicProvider
 
     if (response is Success) {
       loading = false;
+
       return response.response as List<Mechanic>;
     }
 

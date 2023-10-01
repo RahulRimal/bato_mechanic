@@ -1,3 +1,4 @@
+import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
 import 'package:bato_mechanic/view_models/providers/map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
@@ -117,7 +118,8 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
     final map = FlutterMapState.of(context);
     // final map = widget.map;
 
-    MapProvider mapProvider = context.watch<MapProvider>();
+    MapSearchWidgetViewModel mapSearchWidgetViewModel =
+        context.watch<MapSearchWidgetViewModel>();
 
     return Align(
       alignment: widget.alignment,
@@ -146,7 +148,7 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                     }
 
                     // _animatedMapMove(centerZoom.center, zoom);
-                    mapProvider.mswAnimatedMapMove(
+                    mapSearchWidgetViewModel.animatedMapMove(
                         centerZoom.center, zoom, mounted, this);
                   },
                   child: Icon(widget.zoomInIcon,
@@ -171,7 +173,7 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                     }
 
                     // _animatedMapMove(centerZoom.center, zoom);
-                    mapProvider.mswAnimatedMapMove(
+                    mapSearchWidgetViewModel.animatedMapMove(
                         centerZoom.center, zoom, mounted, this);
                   },
                   child: Icon(widget.zoomOutIcon,
@@ -191,7 +193,18 @@ class _FlutterMapControlButtonsState extends State<FlutterMapControlButtons>
                     Position userPosition =
                         await Geolocator.getCurrentPosition();
 
-                    mapProvider.mswAnimatedMapMove(
+                    // if(mapProvider.mswSelectedPlaceName == null){
+
+                    // }
+
+                    String? placeName =
+                        await mapSearchWidgetViewModel.getLocationName(
+                            userPosition.latitude, userPosition.longitude);
+                    if (placeName != null) {
+                      mapSearchWidgetViewModel.selectedPlaceName = placeName;
+                    }
+
+                    mapSearchWidgetViewModel.animatedMapMove(
                         LatLng(userPosition.latitude, userPosition.longitude),
                         15.0,
                         mounted,

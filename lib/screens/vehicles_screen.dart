@@ -1,5 +1,7 @@
+import 'package:bato_mechanic/screens/managers/values_manager.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_category_provider.dart';
 import 'package:bato_mechanic/view_models/providers/vehicle_provider.dart';
+import 'package:bato_mechanic/view_models/vehicle_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,115 +18,106 @@ class VehiclesScreen extends StatefulWidget {
 
 class _VehiclesScreenState extends State<VehiclesScreen>
     with WidgetsBindingObserver {
-  late VehicleProvider _vehicleProvider;
+  late VehiclesScreenViewModel _vehiclesViewModel;
 
   @override
   void initState() {
     super.initState();
-    _vehicleProvider = Provider.of<VehicleProvider>(context, listen: false);
-    _vehicleProvider.bindVSViewModel(context, this);
+    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _vehiclesViewModel =
+          Provider.of<VehiclesScreenViewModel>(context, listen: false);
+      _vehiclesViewModel.init(context);
+    });
   }
 
   @override
   void dispose() {
-    _vehicleProvider.unBindVSViewModel(this);
-
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    VehicleProvider vehicleProvider = context.watch<VehicleProvider>();
+    VehiclesScreenViewModel vehiclesViewModel =
+        context.watch<VehiclesScreenViewModel>();
     return Scaffold(
-      // backgroundColor: Colors.amber[800],
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(
-                height: 200,
-              ),
-              const Text(
-                'Select your vehicle to repair',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              if (vehicleProvider.loading)
-                Center(
-                  child: CircularProgressIndicator(),
-                )
-              else
-                GridView.builder(
-                  shrinkWrap: true,
-                  // itemCount: vehicles.length,
-                  itemCount: vehicleProvider.vehicles.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                  ),
-                  itemBuilder: (context, index) => GestureDetector(
-                    onTap: () {
-                      vehicleProvider.selectedVehicle =
-                          vehicleProvider.vehicles[index];
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const VehiclePartsScreen()));
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(8),
-                      padding: const EdgeInsets.all(8),
-                      width: 50,
-                      // height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.amberAccent[200],
-                        borderRadius: BorderRadius.circular(
-                          20,
-                        ),
-                      ),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Image.asset('images/car.png'),
-                            // Image.asset(
-                            //   // vehicles[index].image,
-                            //   _vehicleProvider.vehicles[index].image,
-                            //   width: 100,
-                            // ),
-                            Image.network(
-                              vehicleProvider.vehicles[index].image,
-                              // width: 100,
-                            ),
+      body: _buildUI(vehiclesViewModel),
+    );
+  }
 
-                            Flexible(
-                              child: Text(
-                                vehicleProvider.vehicles[index].name,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+  _buildUI(VehiclesScreenViewModel vehiclesViewModel) {
+    if (vehiclesViewModel.loading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (vehiclesViewModel.vehicleError != null) {
+      return Center(
+        child: Text(vehiclesViewModel.vehicleError!.message.toString()),
+      );
+    }
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 200,
+            ),
+            Text(
+              'Select your vehicle to repair',
+              style: Theme.of(context).textTheme.displayLarge,
+            ),
+            GridView.builder(
+              shrinkWrap: true,
+              itemCount: vehiclesViewModel.vehicles.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  vehiclesViewModel.selectedVehicle =
+                      vehiclesViewModel.vehicles[index];
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const VehiclePartsScreen()));
+                },
+                child: Card(
+                  margin: const EdgeInsets.all(AppMargin.m8),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppMargin.m8),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.network(
+                            vehiclesViewModel.vehicles[index].image,
+                            // width: 100,
+                          ),
+
+                          Flexible(
+                            child: Text(
+                              vehiclesViewModel.vehicles[index].name,
+                              style: Theme.of(context).textTheme.displaySmall,
                             ),
-                            // Text(
-                            //   // 'Small four wheeler',
-                            //   vehicles[index].tagLine,
-                            //   style: const TextStyle(
-                            //     fontSize: 12,
-                            //     fontWeight: FontWeight.bold,
-                            //   ),
-                            // )
-                          ]),
-                    ),
+                          ),
+                          // Text(
+                          //   // 'Small four wheeler',
+                          //   vehicles[index].tagLine,
+                          //   style: const TextStyle(
+                          //     fontSize: 12,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // )
+                        ]),
                   ),
                 ),
-            ],
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

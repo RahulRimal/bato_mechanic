@@ -9,7 +9,7 @@ import '../models/system_models.dart';
 import '../screens/managers/strings_manager.dart';
 import '../screens/managers/values_manager.dart';
 
-class VechicleCategoryApi {
+class VehicleCategoryApi {
   static getCategories() async {
     try {
       var url = Uri.parse('${RemoteManager.BASE_URI}categories/');

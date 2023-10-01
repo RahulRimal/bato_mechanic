@@ -1,15 +1,14 @@
 import 'package:bato_mechanic/data/vehicle_api.dart';
 import 'package:bato_mechanic/data/vehicle_part_api.dart';
 import 'package:bato_mechanic/models/vehicle_part.dart';
-import 'package:bato_mechanic/view_models/base_view_model.dart';
+import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:bato_mechanic/view_models/vehicle_parts_screen_view_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/system_models.dart';
 import '../../models/vehicle.dart';
 
-class VehiclePartProvider
-    with ChangeNotifier, BaseViewModel, VehiclePartsScreenViewModel {
+abstract class VehiclePartProvider extends ChangeNotifier {
   List<VehiclePart> _parts = [];
   bool _loading = false;
   VehiclePartError? _vehiclePartError;
@@ -18,9 +17,7 @@ class VehiclePartProvider
 
   List<VehiclePart> get parts => _parts;
   set parts(List<VehiclePart> parts) {
-    // loading = true;
     _parts = parts;
-    // loading = false;
   }
 
   bool get loading => _loading;

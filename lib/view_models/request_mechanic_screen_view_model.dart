@@ -2,72 +2,36 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bato_mechanic/models/mechanic.dart';
-import 'package:bato_mechanic/models/vehicle.dart';
 import 'package:bato_mechanic/models/vehicle_repair_request.dart';
-import 'package:bato_mechanic/view_models/base_view_model.dart';
+import 'package:bato_mechanic/view_models/base_view_model_old.dart';
 import 'package:bato_mechanic/view_models/map_search_widget_view_model.dart';
+import 'package:bato_mechanic/view_models/vehicle_category_screen_view_model.dart';
+import 'package:bato_mechanic/view_models/vehicle_parts_screen_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-import '../models/vehicle_category.dart';
 import '../utils/toast_helper.dart';
+import 'base_view_model.dart';
+import 'providers/mechanic_provider.dart';
 
-mixin RequestMechanicScreenViewModel
-    on ChangeNotifier, BaseViewModel, MapSearchWidgetViewModel {
-  List<Mechanic> _recommendedMechanics = [];
-  Mechanic? _preferedMechanic;
-  VehicleRepairRequest? _repairRequest;
-  late TextEditingController _issueDescriptionController;
-
-  VideoPlayerController? _videoController;
-  List<File> _selectedImages = [];
-  ImagePicker _imagePicker = ImagePicker();
-
-  List<Mechanic> get rmsRecommendedMechanics => _recommendedMechanics;
-  set rmsRecommendedMechanics(List<Mechanic> value) {
-    _recommendedMechanics = value;
-    notifyListeners();
+class RequestMechanicScreenViewModel extends MechanicProvider
+    with BaseViewModel, ViewModelInputs, ViewModelOutputs {
+  init(BuildContext context) async {
+    initViewModels(context);
+    // super.recommendedMechanics =
+    var response = await super.fetchRecomendedMechanics(
+        vehicleCategoryViewModel.selectedVehicleCategory!.name.toLowerCase(),
+        vehiclePartViewModel.selectedVehiclePart!.name.toLowerCase());
+    if (response is List<Mechanic>) _recommendedMechanics = response;
   }
 
-  Mechanic? get rmsPreferedMechanic => _preferedMechanic;
-  set rmsPreferedMechanic(Mechanic? value) {
-    _preferedMechanic = value;
-    notifyListeners();
+  destroy() {
+    _videoController?.dispose();
   }
 
-  VehicleRepairRequest? get rmsRepairRequest => _repairRequest;
-  set rmsRepairRequest(VehicleRepairRequest? value) {
-    _repairRequest = value;
-    notifyListeners();
-  }
-
-  TextEditingController get rmsIssueDescriptionController =>
-      _issueDescriptionController;
-  // set rmsIssueDescriptionController(TextEditingController value) {
-  //   _issueDescriptionController = value;
-  //   notifyListeners();
-  // }
-
-  VideoPlayerController? get rmsVideoController => _videoController;
-  set rmsVideoController(VideoPlayerController? value) {
-    _videoController = value;
-    notifyListeners();
-  }
-
-  List<File> get rmsSelectedImages => _selectedImages;
-  set rmsSelectedImages(List<File> value) {
-    _selectedImages = value;
-    notifyListeners();
-  }
-
-  ImagePicker get rmsImagePicker => _imagePicker;
-  set rmsImagePicker(ImagePicker value) {
-    _imagePicker = value;
-    notifyListeners();
-  }
-
-  Future<void> rmsPickImages() async {
+  Future<void> pickImages() async {
     final List<XFile> images = await ImagePicker().pickMultiImage(
       imageQuality: 80, // Adjust the image quality as desired
     );
@@ -76,44 +40,84 @@ mixin RequestMechanicScreenViewModel
     notifyListeners();
   }
 
-  Future<void> rmsPickVideo() async {
+  Future<void> pickVideo() async {
     final XFile? video =
         await _imagePicker.pickVideo(source: ImageSource.gallery);
     if (video != null) {
       _videoController = VideoPlayerController.file(File(video.path));
       await _videoController!.initialize();
-      // setState(() {});
       notifyListeners();
     }
   }
 
-  rmsRequestForVehicleRepair(BuildContext context) async {
-    String coordinates =
-        '${mechanicProvider.mswMarkerPosition.latitude},${mechanicProvider.mswMarkerPosition.longitude}';
+  removeSelectedImage(File image) {
+    _selectedImages.remove(image);
+    notifyListeners();
+  }
 
+  requestForVehicleRepair(BuildContext context) async {
+    String coordinates =
+        '${mapViewModel.markerPosition.latitude},${mapViewModel.markerPosition.longitude}';
+    if (mapViewModel.selectedPlaceName == null ||
+        mapViewModel.selectedPlaceName!.isEmpty) {
+      ToastHelper.showNotification(
+        context,
+        'Please select a place',
+        notificationDuration: 2,
+      );
+      return;
+    }
+    if (_issueDescriptionController.text.isEmpty) {
+      ToastHelper.showNotification(
+        context,
+        'Please describe your issue in details',
+        notificationDuration: 2,
+      );
+      return;
+    }
+    if (_selectedImages.isEmpty) {
+      ToastHelper.showNotification(
+        context,
+        'Please post some images showing the issue',
+        notificationDuration: 2,
+      );
+      return;
+    }
+    if (_videoController == null) {
+      ToastHelper.showNotification(
+        context,
+        'Please post a video showing the issue',
+        notificationDuration: 2,
+      );
+      return;
+    }
+    if (_preferedMechanic == null) {
+      ToastHelper.showNotification(
+        context,
+        'Please select your preferred mechanic',
+        notificationDuration: 2,
+      );
+      return;
+    }
+    _issueDescriptionFocusNode.unfocus();
     Map<String, dynamic> requestData = {
       "customer": 1,
-      "preferred_mechanic": mechanicProvider.rmsPreferedMechanic!.id,
-      "location_name": mechanicProvider.mapProvider.mswSelectedPlaceName,
+      "preferred_mechanic": _preferedMechanic!.id,
+      "location_name": mapViewModel.selectedPlaceName,
       "location_coordinates": coordinates,
-      "vehicle": mechanicProvider.vehicleProvider.selectedVehicle!.id,
-      "vehicle_part":
-          mechanicProvider.vehiclePartProvider.selectedVehiclePart!.id,
-      "description": mechanicProvider.rmsIssueDescriptionController.text,
+      "vehicle": vehicleViewModel.selectedVehicle!.id,
+      "vehicle_part": vehiclePartViewModel.selectedVehiclePart!.id,
+      "description": _issueDescriptionController.text,
     };
-
     systemProvider.showLoadingWithMessageOptional(context,
         message: 'Requesting for vehicle repair');
-    // Future.delayed(const Duration(seconds: 5), () {
-
-    // });
-
-    if (await vehicleRepairRequestProvider
+    if (await vehicleRepairRequestViewModel
         .createVehicleRepairRequest(requestData)) {
       systemProvider.showLoadingWithMessageOptional(context,
           message: 'Adding images');
-      if (await vehicleRepairRequestProvider.addImagesToVechicleRepairRequest(
-          vehicleRepairRequestProvider.vehicleRepairRequests.last.id.toString(),
+      if (await vehicleRepairRequestViewModel.addImagesToVechicleRepairRequest(
+          vehicleRepairRequestViewModel.vehicleRepairRequests.last.id
+              .toString(),
           _selectedImages)) {
         systemProvider.closeLoading(context);
         ToastHelper.showNotification(
@@ -121,24 +125,70 @@ mixin RequestMechanicScreenViewModel
       }
     }
   }
+}
 
-  bindRMSViewModel(BuildContext context, WidgetsBindingObserver observer) {
-    bindBaseViewModal(context);
-    _issueDescriptionController = TextEditingController();
-    // Register this object as an observer
-    WidgetsBinding.instance.addObserver(observer);
+mixin ViewModelInputs {
+  List<Mechanic> _recommendedMechanics = [];
+  Mechanic? _preferedMechanic;
+  VehicleRepairRequest? _repairRequest;
+  late TextEditingController _issueDescriptionController =
+      TextEditingController();
+  FocusNode _issueDescriptionFocusNode = FocusNode();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      rmsRecommendedMechanics = await mechanicProvider.fetchRecomendedMechanics(
-          vehicleCategoryProvider.selectedVehicleCategory!.name.toLowerCase(),
-          vehiclePartProvider.selectedVehiclePart!.name.toLowerCase());
-    });
+  VideoPlayerController? _videoController;
+  List<File> _selectedImages = [];
+  ImagePicker _imagePicker = ImagePicker();
+
+  List<Mechanic> get recommendedMechanics => _recommendedMechanics;
+
+  Mechanic? get preferedMechanic => _preferedMechanic;
+
+  VehicleRepairRequest? get repairRequest => _repairRequest;
+
+  TextEditingController get issueDescriptionController =>
+      _issueDescriptionController;
+  // set rmsIssueDescriptionController(TextEditingController value) {
+  //   _issueDescriptionController = value;
+  //   notifyListeners();
+  // }
+
+  FocusNode get issueDescriptionFocusNode => _issueDescriptionFocusNode;
+
+  VideoPlayerController? get videoController => _videoController;
+
+  List<File> get selectedImages => _selectedImages;
+
+  ImagePicker get imagePicker => _imagePicker;
+}
+
+mixin ViewModelOutputs on ChangeNotifier, ViewModelInputs {
+  set recommendedMechanics(List<Mechanic> value) {
+    _recommendedMechanics = value;
+    notifyListeners();
   }
 
-  unBindRMSViewModel(WidgetsBindingObserver observer) {
-    unBindBaseViewModal();
-    _videoController?.dispose();
-    // Unregister this object as an observer
-    WidgetsBinding.instance.removeObserver(observer);
+  set preferedMechanic(Mechanic? value) {
+    _preferedMechanic = value;
+    notifyListeners();
+  }
+
+  set repairRequest(VehicleRepairRequest? value) {
+    _repairRequest = value;
+    notifyListeners();
+  }
+
+  set videoController(VideoPlayerController? value) {
+    _videoController = value;
+    notifyListeners();
+  }
+
+  set selectedImages(List<File> value) {
+    _selectedImages = value;
+    notifyListeners();
+  }
+
+  set imagePicker(ImagePicker value) {
+    _imagePicker = value;
+    notifyListeners();
   }
 }

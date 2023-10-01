@@ -58,12 +58,13 @@ class ToastHelper {
     );
   }
 
-  static showNotification(BuildContext context, String message) {
+  static showNotification(BuildContext context, String message,
+      {notificationDuration = 3}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: Colors.amberAccent[700],
       dismissDirection: DismissDirection.horizontal,
       content: Text(
-        message.toCapitalize(),
+        message.capitalize(),
         textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 16,
@@ -71,7 +72,7 @@ class ToastHelper {
           color: Colors.white,
         ),
       ),
-      duration: const Duration(seconds: 3),
+      duration: Duration(seconds: notificationDuration),
     ));
   }
 }
